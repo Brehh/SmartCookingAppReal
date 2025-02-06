@@ -3,11 +3,6 @@ import google.generativeai as genai
 import textwrap  # For wrapping long text
 
 # --- API Key Setup (Replace with your actual keys) ---
-API_KEYS = [
-    "AIzaSyCnvlaZII4rP6UUy9LHL2u5Ab7CpST7U9g",
-    "AIzaSyBXg8nVnRCrLcbBTby7j5yDoKaQvfo9rFk",
-    "AIzaSyCbPsdkZ8DGCAOSlfrXhh5JP2OLYEDHcJg"
-]
 
 # --- Helper Functions ---
 def call_gemini_api(prompt):
