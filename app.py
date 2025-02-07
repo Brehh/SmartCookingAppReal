@@ -1,6 +1,6 @@
 import streamlit as st
 import google.generativeai as genai
-import textwrap  # For wrapping long text
+import textwrap
 
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
@@ -12,7 +12,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
 
 # --- Helper Functions ---
 def call_gemini_api(prompt):
@@ -30,122 +29,119 @@ def call_gemini_api(prompt):
                 return f"❌ เกิดข้อผิดพลาด: {error_message}"
     return "⚠️ API ทั้งหมดหมดโควต้าแล้ว กรุณาตรวจสอบบัญชีของคุณ"
 
-
 def process_menus(response_text):
-    # More robust menu splitting, handles variations and edge cases
     menu_list = []
-    separators = ["🍽️ เมนูที่", "\n- ", "\n• ", "\n— ", "- ", "• "]  # Added more separators
+    separators = ["🍽️ เมนูที่", "\n- ", "\n• ", "\n— ", "- ", "• "]
     for sep in separators:
         if sep in response_text:
             menu_list = response_text.split(sep)
-            break  # Stop at the first successful split
-    else:  # No separator found, treat the whole thing as one menu (fallback)
+            break
+    else:
         return [response_text.strip()]
 
     menu_list = [menu.strip() for menu in menu_list if menu.strip()]
     return menu_list
-
 
 # --- Custom CSS ---
 st.markdown("""
 <style>
 /* Global Styles */
 body {
-    font-family: 'Kanit', sans-serif; /* Modern Thai font */
+    font-family: 'Kanit', sans-serif;
 }
 
 .stApp {
-    background-color: #a3edf0; /* Very light gray */
-    background-image: url("https://www.transparenttextures.com/patterns/brilliant.png"); /* Subtle metal texture */
+    /* No background changes here - default Streamlit background */
 }
-
 
 /* Main Container Styles */
 .main-container {
-    background-color: white;
     border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 30px;
     margin-bottom: 20px;
-    border: 2px solid #e0e0e0; /* Subtle border */
-
+    border: 2px solid #e0e0e0;
 }
-
 
 /* Header */
 .title {
-    color: #343a40; /* Darker gray */
+    color: #343a40;
     text-align: center;
     padding: 1rem 0;
-    font-size: 3rem;  /* Even larger title */
-    font-weight: 700;   /* Bold */
-    margin-bottom: 1rem; /* Space below the title */
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
 }
 
-/* Mode Selection Radio Buttons*/
+/* Mode Selection Radio Buttons - Enhanced Styling */
 .mode-radio {
-    margin-bottom: 1.5rem !important;
+    margin-bottom: 2.5rem !important; /* More space */
 }
 .mode-radio > div {
     display: flex;
-    justify-content: center; /* Center the radio buttons */
-    gap: 1rem;           /* Space between buttons */
+    justify-content: center;
+    gap: 1.5rem;  /* Larger gap */
 }
 .mode-radio label {
-    background-color: #e9ecef; /* Light gray background */
-    border: 1px solid #ced4da;
-    border-radius: 20px; /* Rounded buttons */
-    padding: 8px 18px;     /* Comfortable padding */
-    margin: 0 5px;
-    transition: all 0.2s ease;
+    border: 2px solid #007bff; /* Blue border */
+    border-radius: 25px; /* More rounded */
+    padding: 12px 24px; /* Larger padding */
+    margin: 0; /* Remove margin */
+    transition: all 0.3s ease; /* Smoother transition */
+    font-size: 1.3rem; /* Larger font */
+    font-weight: 600;   /* Semi-bold */
+    background-color: #f8f9fa; /* Light background */
+    color: #007bff; /* Blue text */
 }
 .mode-radio input[type="radio"]:checked + label {
     background-color: #007bff; /* Blue when selected */
     color: white;
-    border-color: #007bff;
+    /* No need to repeat border-color */
 }
-
+.mode-radio input[type="radio"] {
+  display: none; /* Hide the default radio button itself */
+}
 
 
 /* Subheaders */
 .st-expanderHeader {
-    font-size: 1.3rem; /* Slightly smaller than before */
-    font-weight: 600;  /* Semi-bold */
+    font-size: 1.5rem; /* Larger */
+    font-weight: 700;  /* Bolder */
+    margin-bottom: 0.5rem; /* Space below header */
 }
 
 /* Input Sections */
 .input-section {
-    /* Removed background/shadow/padding to blend into main container */
-    margin-bottom: 1rem; /* Reduced spacing */
+    margin-bottom: 1rem;
 }
 
 /* Input Fields */
 .stTextInput, .stSelectbox, .stSlider, .stRadio, .stNumberInput {
-    margin-bottom: 0.8rem; /* Consistent spacing */
+    margin-bottom: 0.8rem;
 }
 
 /* Text Area */
 .stTextArea>div>div>textarea{
     border-color:#3498db;
-    border-radius: 8px; /* Rounded corners */
+    border-radius: 8px;
 }
 
 /* Buttons */
 .stButton>button {
-    background-color: #28a745; /* Green */
+    background-color: #28a745;
     color: white;
     border: none;
-    border-radius: 25px; /* More rounded buttons */
-    padding: 12px 28px;  /* Larger padding */
-    font-size: 1.2rem;    /* Slightly larger font */
+    border-radius: 25px;
+    padding: 12px 28px;
+    font-size: 1.2rem;
     transition: all 0.3s ease;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
     width: 100%;
 }
 
 .stButton>button:hover {
-    background-color: #218838; /* Darker green on hover */
-    transform: translateY(-3px);  /* More noticeable lift */
+    background-color: #218838;
+    transform: translateY(-3px);
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
@@ -156,7 +152,6 @@ body {
 
 /* Menu Columns */
 .menu-column {
-    background-color: #f8f9fa;
     border-radius: 12px;
     padding: 25px;
     margin-bottom: 15px;
@@ -171,7 +166,7 @@ body {
 }
 
 .menu-column h3 {
-    color: #28a745; /* Green heading */
+    color: #28a745;
     margin-bottom: 12px;
     font-size: 1.5rem;
     font-weight: 600;
@@ -180,17 +175,14 @@ body {
 .menu-item {
     font-size: 1.05rem;
     line-height: 1.7;
-    color: #495057; /* Slightly darker gray */
 }
-
 
 /* About Section */
 .about-section {
-    background-color: #f8f9fa; /* Light gray */
     border-radius: 12px;
     padding: 25px;
-    margin-top: 30px; /* More space */
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); /* Consistent shadow */
+    margin-top: 30px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid #dee2e6;
 }
 .about-section ul {
@@ -199,17 +191,21 @@ body {
 }
 
 .about-section li {
-    margin-bottom: 0.6rem; /* Slightly reduced spacing */
+    margin-bottom: 0.6rem;
 }
 
 /* Spinners */
 .st-cf {
-    color: #28a745 !important; /* Green spinners */
+    color: #28a745 !important;
 }
 
+/* Bold and Larger Expander Buttons */
+.st-expander button[data-baseweb="button"] {
+    font-size: 1.3rem !important; /* Larger font */
+    font-weight: bold !important;   /* Bold text */
+}
 </style>
 """, unsafe_allow_html=True)
-
 
 # --- App UI ---
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
@@ -241,7 +237,6 @@ with st.container(border=True):
                 difficulty = st.radio("ระดับความยาก", ["ง่าย", "ปานกลาง", "ยาก", 'ยากมาก', 'นรก'], horizontal=True)
                 cook_time = st.slider("เวลาทำอาหาร (นาที)", 5, 180, 30, step=5)
 
-        # Correctly nested button for "สร้างเมนู"
         if st.button("🍳 สร้างเมนู", use_container_width=True):
             if ingredients:
                 prompt = (f"ฉันมี: {ingredients} เป็นวัตถุดิบหลัก "
@@ -265,7 +260,7 @@ with st.container(border=True):
                 st.warning("⚠️ กรุณากรอกวัตถุดิบของคุณ")
 
 
-    elif option == "ค้นหาเมนูสำหรับซื้อ":  # Corrected 'elif'
+    elif option == "ค้นหาเมนูสำหรับซื้อ":
         st.subheader("✨ ค้นหาเมนูที่ใช่สำหรับคุณ 3 เมนู")
 
         with st.expander("⚙️ ตั้งค่าการค้นหา", expanded=True):
@@ -306,11 +301,11 @@ with st.container(border=True):
                                          "อาหารมังสวิรัติ", "อาหารเจ", "อาหารอีสาน", "อาหารใต้", "อาหารเหนือ",
                                          "อาหารฟิวชั่น", "ขนม", "เครื่องดื่ม", "อาหารตะวันตก", "อาหารนานาชาติ"])
             with col2:
-                taste = st.radio("รสชาติ", ["เผ็ด", "หวาน", "เค็ม", "เปรี้ยว", "ขม", "อูมามิ", "มัน", "ฝาด", "จืด", 'รสจัด',
+                                taste = st.radio("รสชาติ", ["เผ็ด", "หวาน", "เค็ม", "เปรี้ยว", "ขม", "อูมามิ", "มัน", "ฝาด", "จืด", 'รสจัด',
                                             'กลมกล่อม', 'กลางๆ'], horizontal=True)
                 budget = st.radio("งบประมาณ", ['ต่ำกว่า 100 บาท', '100 - 300 บาท', '300 - 1000 บาท', '1000 - 10000 บาท',
                                            ',มากกว่า 10000 บาท(ไม่จำกัดงบ(ระดับ MrBeast))'], horizontal=True)
-        # Correctly nested button for "ค้นหาเมนู"
+
         if st.button("🔎 ค้นหาเมนู", use_container_width=True):
             prompt = (f"ฉันต้องการซื้ออาหาร {category} รสชาติ {taste} งบประมาณ {budget} ใน {country} "
                       f"แนะนำ 3 ตัวเลือกเมนู {category} ที่มีขายใน {country} คั่นด้วย '🍽️ เมนูที่' ไม่ต้องเกริ่นนำ")
