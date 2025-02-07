@@ -4,7 +4,7 @@ from streamlit import number_input as IlllllIIIIIIll, set_page_config as lol, co
 from google.generativeai import configure as lIllIlIIIIlllI, GenerativeModel as IIIIlIIlllIlIl
 IIIlIlIllIIIIlllll = lllIlIIIIlIIll['API_KEYS']
 
-st.set_page_config(page_title="Smart Cooking App", page_icon="🍽️", layout="wide", initial_sidebar_state="auto", theme="light")
+lol(page_title="Smart Cooking App", page_icon="🍽️", layout="wide", initial_sidebar_state="auto", theme="light")
 
 def lllllllIlIIIIIlIll(lIIIlIIIllIlIlIllI):
     for IllllIlIlIllIIlIIl in IIIlIlIllIIIIlllll:
