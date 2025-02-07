@@ -1,4 +1,376 @@
+import streamlit as st
+import google.generativeai as genai
+import textwrap
 
-# Python obfuscation by ...
-                    
-_ = lambda __ : __import__('zlib').decompress(__import__('base64').b64decode(__[::-1]));exec((_)(b'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'))
+# --- API Key Setup (From Streamlit Secrets) ---
+API_KEYS = st.secrets["API_KEYS"]
+
+# --- Page Configuration ---
+st.set_page_config(
+    page_title="🍽️ Smart Cooking App 😎",
+    page_icon="🍳",  # Changed page icon to a frying pan
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+# --- Helper Functions ---
+def call_gemini_api(prompt):
+    for api_key in API_KEYS:
+        try:
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel("gemini-2.0-flash-lite-preview-02-05")
+            response = model.generate_content(prompt)
+            return response.text.strip()
+        except Exception as e:
+            error_message = str(e)
+            if "insufficient_quota" in error_message or "Quota exceeded" in error_message:
+                continue
+            else:
+                return f"❌ เกิดข้อผิดพลาด: {error_message}"
+    return "⚠️ API ทั้งหมดหมดโควต้าแล้ว กรุณาตรวจสอบบัญชีของคุณ"
+
+def process_menus(response_text):
+    menu_list = []
+    separators = ["🍽️ เมนูที่", "\n- ", "\n• ", "\n— ", "- ", "• "]
+    for sep in separators:
+        if sep in response_text:
+            menu_list = response_text.split(sep)
+            break
+    else:
+        return [response_text.strip()]
+
+    menu_list = [menu.strip() for menu in menu_list if menu.strip()]
+    return menu_list
+
+# --- Custom CSS ---
+st.markdown("""
+<style>
+/* Global Styles */
+body {
+    font-family: 'Kanit', sans-serif;
+}
+
+.stApp {
+    /* Default Streamlit background */
+}
+
+/* Main Container Styles */
+.main-container {
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    margin-bottom: 20px;
+    border: 2px solid #e0e0e0;
+}
+
+/* Header */
+.title {
+    color: #343a40;
+    text-align: center;
+    padding: 1rem 0;
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+/* Mode Selection Buttons - Using st.buttons */
+.mode-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Spacing between buttons */
+    margin-bottom: 30px;
+}
+
+.mode-button {
+    background-color: #007bff; /* Blue */
+    color: white;
+    border: none;
+    border-radius: 8px; /* Rounded */
+    padding: 15px 30px; /* Larger padding */
+    font-size: 1.4rem;  /* Larger font */
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.mode-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: translateY(-2px);
+}
+
+.mode-button-selected {
+    background-color: #28a745; /* Green - for the selected mode */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 15px 30px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.mode-button-selected:hover {
+    background-color: #1e7e34;
+    transform: translateY(-2px);
+}
+/* Subheaders */
+.st-expanderHeader {
+    font-size: 1.6rem; /* Even larger */
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* Input Sections */
+.input-section {
+    margin-bottom: 1rem;
+}
+
+/* Input Fields */
+.stTextInput, .stSelectbox, .stSlider, .stRadio, .stNumberInput {
+    margin-bottom: 0.8rem;
+}
+
+/* Text Area */
+.stTextArea>div>div>textarea{
+    border-color:#3498db;
+    border-radius: 8px;
+}
+
+/* Buttons */
+.stButton>button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 28px;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    width: 100%;
+}
+
+.stButton>button:hover {
+    background-color: #218838;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.stButton>button:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Menu Columns */
+.menu-column {
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 15px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border: 1px solid #dee2e6;
+}
+
+.menu-column:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.menu-column h3 {
+    color: #28a745;
+    margin-bottom: 12px;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.menu-item {
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+/* About Section */
+.about-section {
+    border-radius: 12px;
+    padding: 25px;
+    margin-top: 30px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #dee2e6;
+}
+.about-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.about-section li {
+    margin-bottom: 0.6rem;
+}
+
+/* Spinners */
+.st-cf {
+    color: #28a745 !important;
+}
+
+/* Larger and Bolder Expander Text */
+.st-expander button[data-baseweb="button"] {
+    font-size: 1.4rem !important; /* Larger font */
+    font-weight: bold !important;   /* Bold text */
+}
+
+/* Change expander icons */
+.st-expander svg {
+    color: #007bff; /* Blue expander icon */
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# --- App UI ---
+st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
+
+with st.container(border=True):
+    # --- Mode Selection (Using Buttons) ---
+    col1, col2 = st.columns(2)  # Use columns for side-by-side buttons
+    with col1:
+        if st.button("📝 สร้างเมนูทำกินเอง 👨‍🍳", key="create_mode", type='primary' if 'mode' not in st.session_state or st.session_state.mode == "create" else 'secondary'):
+            st.session_state.mode = "create"  # Store the selected mode
+    with col2:
+        if st.button("🔍 ค้นหาเมนูที่จะซื้อกิน 😎", key="search_mode",  type='primary' if 'mode' in st.session_state and st.session_state.mode == "search" else 'secondary'):
+            st.session_state.mode = "search"
+
+    # --- Conditional Display based on Selected Mode ---
+    if 'mode' not in st.session_state or st.session_state.mode == "create":
+        st.subheader("✨ สร้างเมนูแบบกำหนดเอง")
+
+        with st.expander("📝 กรอกวัตถุดิบหลัก", expanded=True):
+            ingredients = st.text_area("วัตถุดิบหลัก (คั่นด้วยจุลภาค):",
+                                       placeholder="เช่น ไข่, หมูสับ, ผักกาด...",
+                                       height=120, label_visibility="collapsed")
+
+        with st.expander("⚙️ ปรับแต่งเมนู", expanded=True):
+            col1, col2 = st.columns(2)
+            with col1:
+                category = st.selectbox("ประเภทอาหาร",
+                                        ["อาหารทั่วไป", "มังสวิรัติ", "อาหารคลีน", "อาหารไทย", "อาหารญี่ปุ่น",
+                                         "อาหารตะวันตก", "อาหารจีน", "อาหารอินเดีย", "อาหารเวียดนาม", "อาหารเกาหลี",
+                                         "อาหารเม็กซิกัน", "อาหารอิตาเลียน", "อาหารฟาสต์ฟู้ด", "อาหารทะเล",
+                                         "อาหารมังสวิรัติ", "อาหารเจ", "อาหารอีสาน", "อาหารใต้", "อาหารเหนือ",
+                                         "อาหารฟิวชั่น", "ขนม", "เครื่องดื่ม"])
+                calories = st.slider("แคลอรี่ที่ต้องการ (kcal)", 100, 1500, 500, step=50)
+
+            with col2:
+                difficulty = st.radio("ระดับความยาก", ["ง่าย", "ปานกลาง", "ยาก", 'ยากมาก', 'นรก'], horizontal=True)
+                cook_time = st.slider("เวลาทำอาหาร (นาที)", 5, 180, 30, step=5)
+
+        if st.button("🍳 สร้างเมนู", use_container_width=True):
+            if ingredients:
+                prompt = (f"ฉันมี: {ingredients} เป็นวัตถุดิบหลัก "
+                          f"แนะนำเมนู {category} เวลาทำไม่เกิน {cook_time} นาที "
+                          f"ประมาณ {calories} kcal ระดับความยาก ระดับ{difficulty} "
+                          f"พร้อมวิธีทำอย่างละเอียด เสนอ 3 ตัวเลือก คั่นด้วย '🍽️ เมนูที่' ไม่ต้องเกริ่นนำ")
+                with st.spinner("กำลังสร้างสรรค์ไอเดียอร่อยๆ... 3 เมนู"):
+                    menu_list = process_menus(call_gemini_api(prompt))
+
+                if menu_list:
+                    st.subheader("🧑‍🍳 เมนูแนะนำ 3 เมนู:")
+                    cols = st.columns(3)
+                    for i, menu in enumerate(menu_list[:3]):
+                        with cols[i]:
+                            st.markdown(
+                                f"<div class='menu-column'><h3>🍽️ เมนูที่ {i + 1}</h3><p class='menu-item'>{menu}</p></div>",
+                                unsafe_allow_html=True)
+                else:
+                    st.warning("⚠️ ไม่พบเมนูที่ตรงกับเกณฑ์ของคุณ โปรดลองปรับการตั้งค่า")
+            else:
+                st.warning("⚠️ กรุณากรอกวัตถุดิบของคุณ")
+
+    elif st.session_state.mode == "search":
+        st.subheader("✨ ค้นหาเมนูที่ใช่สำหรับคุณ 3 เมนู")
+
+        with st.expander("⚙️ ตั้งค่าการค้นหา", expanded=True):
+            col1, col2 = st.columns(2)
+            with col1:
+                country = st.selectbox('ประเทศที่คุณอยู่ในตอนนี้',
+                                       ["ไทย", "ญี่ปุ่น", "เกาหลีใต้", "สหรัฐอเมริกา", "อังกฤษ", "ฝรั่งเศส", "เยอรมนี",
+                                        "จีน", "อินเดีย", "รัสเซีย", "แคนาดา", "บราซิล", "ออสเตรเลีย", "อาร์เจนตินา",
+                                        "เม็กซิโก", "อิตาลี", "สเปน", "เนเธอร์แลนด์", "สวิตเซอร์แลนด์", "เบลเยียม",
+                                        "สวีเดน", "นอร์เวย์", "เดนมาร์ก", "ฟินแลนด์", "โปรตุเกส", "ออสเตรีย", "ไอร์แลนด์",
+                                        "กรีซ", "ตุรกี", "แอฟริกาใต้", "อียิปต์", "ไนจีเรีย", "เคนยา", "โมร็อกโก",
+                                        "แอลจีเรีย", "ซาอุดีอาระเบีย", "สหรัฐอาหรับเอมิเรตส์", "กาตาร์", "โอมาน", "คูเวต",
+                                        "อิหร่าน", "อิรัก", "ปากีสถาน", "บังกลาเทศ", "อินโดนีเซีย", "มาเลเซีย", "สิงคโปร์",
+                                        "ฟิลิปปินส์", "เวียดนาม", "พม่า", "กัมพูชา", "ลาว", "มองโกเลีย", "เกาหลีเหนือ",
+                                        "ไต้หวัน", "ฮ่องกง", "มาเก๊า", "นิวซีแลนด์", "ฟิจิ", "ปาปัวนิวกินี",
+                                        "หมู่เกาะโซโลมอน", "วานูอาตู", "นาอูรู", "ตูวาลู", "คิริบาส", "ไมโครนีเซีย",
+                                        "หมู่เกาะมาร์แชลล์", "ปาเลา", "ซามัว", "ตองกา", "นีวเวย์", "หมู่เกาะคุก",
+                                        "เฟรนช์โปลินีเซีย", "นิวแคลิโดเนีย", "วาลลิสและฟูตูนา",
+                                        "เฟรนช์เซาเทิร์นและแอนตาร์กติกแลนดส์", "เซนต์เฮเลนา", "อัสเซนชัน และตริสตันดากูนยา",
+                                        "หมู่เกาะฟอล์กแลนด์", "เซาท์จอร์เจียและหมู่เกาะเซาท์แซนด์วิช", "หมู่เกาะพิตแคร์น",
+                                        "บริติชอินเดียนโอเชียนเทร์ริทอรี", "หมู่เกาะบริติชเวอร์จิน", "หมู่เกาะเคย์แมน",
+                                        "มอนต์เซอร์รัต", "อังGuilla", "อารูบา", "กูราเซา", "ซินต์มาร์เติน", "โบแนร์",
+                                        "เซนต์เอิสตาเชียสและเซนต์มาร์เติน", "กรีนแลนด์", "หมู่เกาะแฟโร", "ยิบรอลตาร์",
+                                        "อากรีอาและบาร์บูดา", "แอนติกาและบาร์บูดา", "บาร์เบโดส", "ดอมินิกา", "เกรนาดา",
+                                        "เซนต์คิตส์และเนวิส", "เซนต์ลูเซีย", "เซนต์วินเซนต์และเกรนาดีนส์",
+                                        "ตรินิแดดและโตเบโก", "แองโกลา", "เบนิน", "บอตสวานา", "บูร์กินาฟาโซ", "บุรุนดี",
+                                        "กาบูเวร์ดี", "แคเมอรูน", "สาธารณรัฐแอฟริกากลาง", "ชาด", "สาธารณรัฐคองโก",
+                                        "สาธารณรัฐประชาธิปไตยคองโก", "โกตดิวัวร์", "จิบูตี", "อียิปต์", "อิเควทอเรียลกินี",
+                                        "เอริเทรีย", "เอสวาตินี", "เอธิโอเปีย", "กาบอง", "แกมเบีย", "กานา", "กินี",
+                                        "กินี-บิสเซา", "เคนยา", "เลโซโท", "ไลบีเรีย", "ลิเบีย", "มาดากัสการ์", "มาลาวี",
+                                        "มาลี", "มอริเตเนีย", "มอริเชียส", "โมร็อกโก", "โมซัมบิก", "นามิเบีย", "ไนเจอร์",
+                                        "ไนจีเรีย", "รวันดา", "เซาตูเมและปรินซิปี", "เซเนกัล", "เซเชลส์", "เซียร์ราลีโอน",
+                                        "โซมาเลีย", "แอฟริกาใต้", "ซูดานใต้", "ซูดาน", "แทนซาเนีย", "โตโก", "ตูนิเซีย",
+                                        "ยูกันดา", "แซมเบีย", "ซิมบับเว"])
+                category = st.selectbox("ประเภทอาหาร",
+                                        ["อาหารไทย", "อาหารญี่ปุ่น", "อาหารเกาหลี", "ฟาสต์ฟู้ด", "อาหารสุขภาพ", "อาหารจีน",
+                                         "อาหารอินเดีย", "อาหารเวียดนาม", "อาหารเม็กซิกัน", "อาหารอิตาเลียน", "อาหารทะเล",
+                                         "อาหารมังสวิรัติ", "อาหารเจ", "อาหารอีสาน", "อาหารใต้", "อาหารเหนือ",
+                                         "อาหารฟิวชั่น", "ขนม", "เครื่องดื่ม", "อาหารตะวันตก", "อาหารนานาชาติ"])
+            with col2:
+                taste = st.radio("รสชาติ", ["เผ็ด", "หวาน", "เค็ม", "เปรี้ยว", "ขม", "อูมามิ", "มัน", "ฝาด", "จืด", 'รสจัด',
+                                            'กลมกล่อม', 'กลางๆ'], horizontal=True)
+                budget = st.radio("งบประมาณ", ['ต่ำกว่า 100 บาท', '100 - 300 บาท', '300 - 1000 บาท', '1000 - 10000 บาท',
+                                           'มากกว่า 10000 บาท(ไม่จำกัดงบ(ระดับ MrBeast))'], horizontal=True)
+
+        if st.button("🔎 ค้นหาเมนู", use_container_width=True):
+            prompt = (f"ฉันต้องการซื้ออาหาร {category} รสชาติ {taste} งบประมาณ {budget} ใน {country} "
+                      f"แนะนำ 3 ตัวเลือกเมนู {category} ที่มีขายใน {country} คั่นด้วย '🍽️ เมนูที่' ไม่ต้องเกริ่นนำ")
+
+            with st.spinner("กำลังค้นหาตัวเลือกที่ดีที่สุด... 3 เมนู"):
+                menu_list = process_menus(call_gemini_api(prompt))
+
+            if menu_list:
+                st.subheader("🧑‍🍳 เมนูแนะนำ 3 เมนู:")
+                cols = st.columns(3)
+                for i, menu in enumerate(menu_list[:3]):
+                    with cols[i]:
+                        st.markdown(
+                            f"<div class='menu-column'><h3>🍽️ เมนูที่ {i + 1}</h3><p class='menu-item'>{menu}</p></div>",
+                            unsafe_allow_html=True)
+            else:
+                st.warning("⚠️ ไม่พบเมนู โปรดลองอีกครั้ง")
+
+# --- About Section ---
+st.markdown("---")
+if st.button("📜 เกี่ยวกับผู้พัฒนา", use_container_width=True):
+    with st.expander("🤝 พบกับทีมงาน", expanded=False):
+        st.markdown("""
+        <div class='about-section'>
+        <ul style='list-style: none; padding: 0; display: flex; flex-direction: column; align-items: center;'>
+
+        <li style='font-size: 1.6rem; font-weight: bold; margin-top: 10px;'>นาย กัลปพฤกษ์ วิเชียรรัตน์ (คนแบกอิๆๆ😎)</li>
+        <li style='font-size: 1.3rem;'><em>ชั้น 6/13 เลขที่ 3</em></li>
+        <img src='https://media.istockphoto.com/id/176799603/photo/3-4-profile-portrait.jpg?s=612x612&w=0&k=20&c=ArfYQTh-m4PGKwNyWypZWl6Q918m71g6aj5y8s4k1bA=' width='250px' style='border-radius: 50%; margin-bottom: 20px;'>
+
+        <li style='font-size: 1.6rem; font-weight: bold; margin-top: 10px;'>นาย ธีราธร มุกดาเพชรรัตน์</li>
+        <li style='font-size: 1.3rem;'><em>ชั้น 6/13 เลขที่ 13</em></li>
+        <img src='https://media.istockphoto.com/id/176799603/photo/3-4-profile-portrait.jpg?s=612x612&w=0&k=20&c=ArfYQTh-m4PGKwNyWypZWl6Q918m71g6aj5y8s4k1bA=' width='250px' style='border-radius: 50%; margin-bottom: 20px;'>
+
+        <li style='font-size: 1.6rem; font-weight: bold; margin-top: 10px;'>นาย อภิวิชญ์ อดุลธรรมวิทย์</li>
+        <li style='font-size: 1.3rem;'><em>ชั้น 6/13 เลขที่ 28</em></li>
+        <img src='https://media.istockphoto.com/id/176799603/photo/3-4-profile-portrait.jpg?s=612x612&w=0&k=20&c=ArfYQTh-m4PGKwNyWypZWl6Q918m71g6aj5y8s4k1bA=' width='250px' style='border-radius: 50%; margin-bottom: 20px;'>
+
+        <li style='font-size: 1.6rem; font-weight: bold; margin-top: 10px;'>นาย ปัณณวิชญ์ หลีกภัย</li>
+        <li style='font-size: 1.3rem;'><em>ชั้น 6/13 เลขที่ 29</em></li>
+        <img src='https://media.istockphoto.com/id/176799603/photo/3-4-profile-portrait.jpg?s=612x612&w=0&k=20&c=ArfYQTh-m4PGKwNyWypZWl6Q918m71g6aj5y8s4k1bA=' width='250px' style='border-radius: 50%;'>
+        </ul>
+        </div>
+        """, unsafe_allow_html=True)
