@@ -1,3 +1,87 @@
+import streamlit as st
+from google.generativeai import configure, GenerativeModel
+
+# เพิ่ม CSS สำหรับ Dark Mode
+st.markdown("""
+<style>
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.dark-mode .stApp {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.dark-mode .title {
+    color: #ffffff;
+}
+
+.dark-mode .mode-selection {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+.dark-mode .input-section {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+.dark-mode .stTextInput, .dark-mode .stSelectbox, .dark-mode .stSlider, .dark-mode .stRadio, .dark-mode .stNumberInput {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+.dark-mode .stButton>button {
+    background-color: #3498db;
+    color: #ffffff;
+}
+
+.dark-mode .menu-column {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+.dark-mode .menu-column h3 {
+    color: #3498db;
+}
+
+.dark-mode .menu-item {
+    color: #ffffff;
+}
+
+.dark-mode .st-expanderHeader {
+    color: #ffffff;
+}
+
+.dark-mode .about-section {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+.dark-mode .about-section ul {
+    color: #ffffff;
+}
+
+.dark-mode .about-section li {
+    color: #ffffff;
+}
+
+.dark-mode .st-cf {
+    color: #3498db !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# เพิ่มปุ่มสลับโหมด
+if st.button('🌙 สลับเป็น Dark Mode'):
+    st.markdown("<script>document.body.classList.toggle('dark-mode');</script>", unsafe_allow_html=True)
+
+if st.button(☀️ สลับเป็น Light Mode'):
+    st.markdown("<script>document.body.classList.remove('dark-mode');</script>", unsafe_allow_html=True)
+
 lllllllllllllll, llllllllllllllI, lllllllllllllIl, lllllllllllllII = str, Exception, enumerate, bool
 
 from streamlit import number_input as IlllllIIIIIIll, container as IIllIIllIIIlII, secrets as lllIlIIIIlIIll, button as IIIlIlIIIIIllI, warning as lIllIIllIlIllI, slider as llllIllIlIlIlI, radio as lIIIIIIllIlIll, spinner as IlllIlIIllllII, subheader as lIIlIllIllIllI, selectbox as IlIIlIllIlIIll, expander as lIIIIlllIlIIll, markdown as lIIllIIIIlIIII, text_area as IIIIllIIllllll, columns as lllIlIIlIllIlI
