@@ -252,14 +252,21 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
         st.markdown("""
         <div class='about-section' style='text-align: center;'>
         <ul style='list-style: none; padding: 0;'>
-        <li><strong>นาย กัลปพฤกษ์ วิเชียรรัตน์ (คนแบกอิๆ😎)</strong> - <em>ชั้น 6/13 เลขที่ 3</em></li>
-        <img src='https://images.pexels.com/photos/445109/pexels-photo-445109.jpeg?cs=srgb&dl=pexels-trinitykubassek-445109.jpg&fm=jpg' width='250px' style='display: block; margin: auto;'>
-        <li><strong>นาย ธีราธร มุกดาเพชรรัตน์</strong> - <em>ชั้น 6/13 เลขที่ 13</em></li>
-        <img src='https://images.pexels.com/photos/445109/pexels-photo-445109.jpeg?cs=srgb&dl=pexels-trinitykubassek-445109.jpg&fm=jpg' width='250px' style='display: block; margin: auto;'>
-        <li><strong>นาย อภิวิชญ์ อดุลธรรมวิทย์</strong> - <em>ชั้น 6/13 เลขที่ 28</em></li>
-        <img src='https://images.pexels.com/photos/445109/pexels-photo-445109.jpeg?cs=srgb&dl=pexels-trinitykubassek-445109.jpg&fm=jpg' width='250px' style='display: block; margin: auto;'>
-        <li><strong>นาย ปัณณวิชญ์ หลีกภัย</strong> - <em>ชั้น 6/13 เลขที่ 29</em></li>
-        <img src='https://images.pexels.com/photos/445109/pexels-photo-445109.jpeg?cs=srgb&dl=pexels-trinitykubassek-445109.jpg&fm=jpg' width='250px' style='display: block; margin: auto;'>
+        <li style='font-size: 1.2rem; font-weight: bold;'>นาย กัลปพฤกษ์ วิเชียรรัตน์ (คนแบกอิๆ😎)</li>
+        <li style='font-size: 1rem;'><em>ชั้น 6/13 เลขที่ 3</em></li>
+        <img src='https://images.pexels.com/photos/445109/pexels-photo-445109.jpeg?cs=srgb&dl=pexels-trinitykubassek-445109.jpg&fm=jpg' width='300px' style='display: block; margin: auto;'>
+        
+        <li style='font-size: 1.2rem; font-weight: bold;'>นาย ธีราธร มุกดาเพชรรัตน์</li>
+        <li style='font-size: 1rem;'><em>ชั้น 6/13 เลขที่ 13</em></li>
+        <img src='https://images.pexels.com/photos/445109/pexels-photo-445109.jpeg?cs=srgb&dl=pexels-trinitykubassek-445109.jpg&fm=jpg' width='300px' style='display: block; margin: auto;'>
+        
+        <li style='font-size: 1.2rem; font-weight: bold;'>นาย อภิวิชญ์ อดุลธรรมวิทย์</li>
+        <li style='font-size: 1rem;'><em>ชั้น 6/13 เลขที่ 28</em></li>
+        <img src='https://images.pexels.com/photos/445109/pexels-photo-445109.jpeg?cs=srgb&dl=pexels-trinitykubassek-445109.jpg&fm=jpg' width='300px' style='display: block; margin: auto;'>
+        
+        <li style='font-size: 1.2rem; font-weight: bold;'>นาย ปัณณวิชญ์ หลีกภัย</li>
+        <li style='font-size: 1rem;'><em>ชั้น 6/13 เลขที่ 29</em></li>
+        <img src='https://images.pexels.com/photos/445109/pexels-photo-445109.jpeg?cs=srgb&dl=pexels-trinitykubassek-445109.jpg&fm=jpg' width='300px' style='display: block; margin: auto;'>
         </ul>
         </div>
         """, unsafe_allow_html=True)
