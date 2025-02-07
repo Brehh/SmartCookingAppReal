@@ -253,7 +253,7 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
         <div class='about-section' style='text-align: center;'>
         <ul style='list-style: none; padding: 0; display: flex; flex-direction: column; align-items: center;'>
         
-        <li style='font-size: 1.5rem; font-weight: bold; margin-top: 20px;'>นาย กัลปพฤกษ์ วิเชียรรัตน์ (คนแบกอิๆ😎)</li>
+        <li style='font-size: 1.5rem; font-weight: bold; margin-top: 20px;'>นาย กัลปพฤกษ์ วิเชียรรัตน์ (คนแบกอิๆๆ😎)</li>
         <li style='font-size: 1.2rem;'><em>ชั้น 6/13 เลขที่ 3</em></li>
         <img src='https://media.istockphoto.com/id/176799603/photo/3-4-profile-portrait.jpg?s=612x612&w=0&k=20&c=ArfYQTh-m4PGKwNyWypZWl6Q918m71g6aj5y8s4k1bA=' width='350px' style='display: block; margin: auto;'>
         
