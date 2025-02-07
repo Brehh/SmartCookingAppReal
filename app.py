@@ -4,7 +4,12 @@ from streamlit import number_input as IlllllIIIIIIll, set_page_config as lol, co
 from google.generativeai import configure as lIllIlIIIIlllI, GenerativeModel as IIIIlIIlllIlIl
 IIIlIlIllIIIIlllll = lllIlIIIIlIIll['API_KEYS']
 
-lol(layout="wide")
+lol(
+    page_title="My Streamlit App",
+    page_icon="🧊",  # Optional page icon
+    layout="wide",
+    initial_sidebar_state="expanded", # Optional sidebar state
+)
 
 def lllllllIlIIIIIlIll(lIIIlIIIllIlIlIllI):
     for IllllIlIlIllIIlIIl in IIIlIlIllIIIIlllll:
