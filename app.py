@@ -4,8 +4,8 @@ from streamlit import number_input as IlllllIIIIIIll, set_page_config as lol, co
 from google.generativeai import configure as lIllIlIIIIlllI, GenerativeModel as IIIIlIIlllIlIl
 IIIlIlIllIIIIlllll = lllIlIIIIlIIll['API_KEYS']
 
+lol(layout="wide")
 
-st.set_page_config(layout="wide")
 def lllllllIlIIIIIlIll(lIIIlIIIllIlIlIllI):
     for IllllIlIlIllIIlIIl in IIIlIlIllIIIIlllll:
         try:
