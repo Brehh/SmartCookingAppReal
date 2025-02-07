@@ -1,14 +1,13 @@
 import streamlit as st
 import google.generativeai as genai
-import textwrap  # For wrapping long text
 
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
 st.set_page_config(
-    page_title="🍽️ Smart Cooking App 😎",
-    page_icon="🍽️",  # Optional page icon
+    page_title="🧑‍🍳 Smart Cooking App 🍽️",
+    page_icon="🧑‍🍳",  # Updated page icon
     layout="wide",
-    initial_sidebar_state="expanded", # Optional sidebar state
+    initial_sidebar_state="expanded",
 )
 
 # --- Helper Functions ---
@@ -27,6 +26,7 @@ def call_gemini_api(prompt):
                 return f"❌ เกิดข้อผิดพลาด: {error_message}"
     return "⚠️ API ทั้งหมดหมดโควต้าแล้ว กรุณาตรวจสอบบัญชีของคุณ"
 
+
 def process_menus(response_text):
     menu_list = response_text.split("🍽️ เมนูที่")
     menu_list = [menu.strip() for menu in menu_list if menu.strip()]
@@ -38,40 +38,36 @@ def process_menus(response_text):
         menu_list = [menu.strip() for menu in menu_list if menu.strip()]
     return menu_list
 
+
 # --- Custom CSS ---
 st.markdown("""
 <style>
 /* Global Styles */
 body {
-    font-family: 'Kanit', sans-serif; /* Modern Thai font */
+    font-family: 'Kanit', sans-serif;
+}.stApp {
+    background-color: #f0f2f6;
+    background-image: url("https://www.transparenttextures.com/patterns/subtle-white-feathers.png");
 }
 
-.stApp {
-    background-color: #f0f2f6;  /* Light gray background */
-    background-image: url("https://www.transparenttextures.com/patterns/subtle-white-feathers.png"); /*Subtle Background Pattern*/
-
-}
-
-/* Header */
-.title {
+/* Header */.title {
     color: #2c3e50;
     text-align: center;
     padding: 1rem 0;
-    font-size: 2.5rem; /* Larger title */
-    font-weight: 600;  /* Semi-bold */
+    font-size: 2.5rem;
+    font-weight: 600;
 }
 
-/* Mode Selection */
-.mode-selection {
+/* Mode Selection */.mode-selection {
     margin-bottom: 2rem;
     border-radius: 10px;
     padding: 10px;
     background-color: white;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 2px solid #3498db; /* Add a border */
 }
 
-/* Input Sections */
-.input-section {
+/* Input Sections */.input-section {
     background-color: white;
     padding: 20px;
     border-radius: 10px;
@@ -79,103 +75,85 @@ body {
     margin-bottom: 20px;
 }
 
-/* Input Fields */
-.stTextInput, .stSelectbox, .stSlider, .stRadio, .stNumberInput {
+/* Input Fields */.stTextInput,.stSelectbox,.stSlider,.stRadio,.stNumberInput {
     margin-bottom: 10px;
-}
-.stTextArea>div>div>textarea{
+}.stTextArea>div>div>textarea{
     border-color:#3498db;
 }
 
-/* Buttons */
-.stButton>button {
-    background-color: #3498db; /* Blue */
+/* Buttons */.stButton>button {
+    background-color: #3498db;
     color: white;
     border: none;
-    border-radius: 20px; /* Rounded buttons */
+    border-radius: 20px;
     padding: 10px 24px;
     font-size: 1.1rem;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-    width: 100%; /* Make buttons full width */
-}
-
-.stButton>button:hover {
-    background-color: #2980b9; /* Darker blue on hover */
-    transform: translateY(-2px); /* Slight lift on hover */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 100%;
+}.stButton>button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.stButton>button:active {
-    transform: translateY(0); /* Reset position on click */
+}.stButton>button:active {
+    transform: translateY(0);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Menu Columns */
-.menu-column {
+/* Menu Columns */.menu-column {
     background-color: white;
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 20px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease; /* Smooth transition */
-    border: 2px solid transparent; /* Add a border */
-}
-
-.menu-column:hover {
-    transform: scale(1.03); /* Slightly enlarge on hover */
+    transition: transform 0.2s ease;
+    border: 2px solid transparent;
+}.menu-column:hover {
+    transform: scale(1.03);
     border-color: #3498db;
-}
-
-.menu-column h3 {
-    color: #3498db; /* Blue heading */
+}.menu-column h3 {
+    color: #3498db;
     margin-bottom: 10px;
     font-size: 1.4rem;
-}
-
-.menu-item {
+}.menu-item {
     font-size: 1rem;
     line-height: 1.6;
-    color: #4a4a4a; /* Dark gray text */
+    color: #4a4a4a;
 }
 
-/* Expander */
-.st-expanderHeader {
+/* Expander */.st-expanderHeader {
     font-size: 1.2rem;
-    font-weight: 500; /* Slightly bolder expander header */
+    font-weight: 500;
 }
 
-/* About Section */
-.about-section {
+/* About Section */.about-section {
     background-color: #e0e0e0;
     border-radius: 10px;
     padding: 20px;
     margin-top: 20px;
-}
-.about-section ul {
-    list-style: none; /* Remove bullet points */
+}.about-section ul {
+    list-style: none;
     padding: 0;
 
+}.about-section li {
+    margin-bottom:.5rem;
 }
 
-.about-section li {
-    margin-bottom: .5rem;
-}
-
-/* Spinners */
-.st-cf {
-    color: #3498db !important; /* Make spinners blue */
+/* Spinners */.st-cf {
+    color: #3498db!important;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 # --- App UI ---
-st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='title'>🧑‍🍳 Smart Cooking App 🍽️</h1>", unsafe_allow_html=True)
 
-with st.container(border=True):
-    option = st.radio("🔹 เลือกโหมด:", ["สร้างเมนูจากวัตถุดิบ", "ค้นหาเมนูสำหรับซื้อ"],
-                    horizontal=True, key="mode_select")
+# --- Mode Selection ---
+st.markdown("<div class='mode-selection'>", unsafe_allow_html=True)  # Add a container for styling
+option = st.radio("🔹 เลือกโหมด:", ["สร้างเมนูจากวัตถุดิบ", "ค้นหาเมนูสำหรับซื้อ"],
+                  horizontal=True, key="mode_select")
+st.markdown("</div>", unsafe_allow_html=True)
 
 if option == "สร้างเมนูจากวัตถุดิบ":
     st.subheader("✨ สร้างเมนูแบบกำหนดเอง")
