@@ -55,7 +55,7 @@ if lIIIlIIIlllllllllI == 'สร้างเมนูจากวัตถุด
             IIlIlIIlllllIllllI = llllIllIlIlIlI('เวลาทำอาหาร (นาที)', 5, 180, 30, step=5)
     if IIIlIlIIIIIllI('🍳 สร้างเมนู', use_container_width=lllllllllllllII(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1)):
         if IlIllIIlIlllIIllII:
-            lIIIlIIIllIlIlIllI = f"ฉันมี: {IlIllIIlIlllIIllII} ({llIlIlIlIlllllIlll} วัตถุดิบหลัก) แนะนำเมนู {IIllllllllIIIIIlII} เวลาทำไม่เกิน {IIlIlIIlllllIllllI} นาที ประมาณ {llIlIllIlIlIIllIII} kcal ระดับความยาก {llIIIIlIIIllIIlIll} พร้อมวิธีทำอย่างละเอียด เสนอ 3 ตัวเลือก คั่นด้วย '🍽️ เมนูที่'"
+            lIIIlIIIllIlIlIllI = f"ฉันมี: {IlIllIIlIlllIIllII} ({llIlIlIlIlllllIlll} วัตถุดิบหลัก) แนะนำเมนู {IIllllllllIIIIIlII} เวลาทำไม่เกิน {IIlIlIIlllllIllllI} นาที ประมาณ {llIlIllIlIlIIllIII} kcal ระดับความยาก {llIIIIlIIIllIIlIll} พร้อมวิธีทำอย่างละเอียด เสนอ 3 ตัวเลือก คั่นด้วย '🍽️ เมนูที่' ไม่ต้องเกริ่นนำ"
             with IlllIlIIllllII('กำลังสร้างสรรค์ไอเดียอร่อยๆ...'):
                 lIIIllIlIllIIIIlll = lIlIIIIIIIlIIlIllI(lllllllIlIIIIIlIll(lIIIlIIIllIlIlIllI))
             if lIIIllIlIllIIIIlll:
