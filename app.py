@@ -3,7 +3,6 @@ lllllllllllllll, llllllllllllllI, lllllllllllllIl, lllllllllllllII = str, Except
 from streamlit import number_input as IlllllIIIIIIll, set_page_config as lol, container as IIllIIllIIIlII, secrets as lllIlIIIIlIIll, button as IIIlIlIIIIIllI, warning as lIllIIllIlIllI, slider as llllIllIlIlIlI, radio as lIIIIIIllIlIll, spinner as IlllIlIIllllII, subheader as lIIlIllIllIllI, selectbox as IlIIlIllIlIIll, expander as lIIIIlllIlIIll, markdown as lIIllIIIIlIIII, text_area as IIIIllIIllllll, columns as lllIlIIlIllIlI
 from google.generativeai import configure as lIllIlIIIIlllI, GenerativeModel as IIIIlIIlllIlIl
 IIIlIlIllIIIIlllll = lllIlIIIIlIIll['API_KEYS']
-lol(layout="wide")
 
 
 st.set_page_config(layout="wide")
