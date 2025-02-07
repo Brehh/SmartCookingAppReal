@@ -5,8 +5,8 @@ from google.generativeai import configure as lIllIlIIIIlllI, GenerativeModel as 
 IIIlIlIllIIIIlllll = lllIlIIIIlIIll['API_KEYS']
 
 lol(
-    page_title="My Streamlit App",
-    page_icon="🧊",  # Optional page icon
+    page_title="🍽️ Smart Cooking App 😎",
+    page_icon="🍽️",  # Optional page icon
     layout="wide",
     initial_sidebar_state="expanded", # Optional sidebar state
 )
