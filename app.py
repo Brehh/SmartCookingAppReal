@@ -56,7 +56,7 @@ body {
 
 .stApp {
     background-color: #f8f9fa; /* Very light gray */
-    background-image: url("https://d3h2k7ug3o5pb3.cloudfront.net/image/2020-11-23/3b788920-2d79-11eb-9dcd-8b2ef5358591.jpg"); /* Subtle metal texture */
+    background-image: url("https://www.transparenttextures.com/patterns/brilliant.png"); /* Subtle metal texture */
 }
 
 
