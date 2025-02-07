@@ -86,4 +86,28 @@ elif lIIIlIIIlllllllllI == 'ค้นหาเมนูสำหรับซื�
 lIIllIIIIlIIII('---')
 if IIIlIlIIIIIllI('📜 เกี่ยวกับผู้พัฒนา', use_container_width=lllllllllllllII(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1)):
     with lIIIIlllIlIIll('🤝 พบกับทีมงาน'):
-        lIIllIIIIlIIII("\n        <div class='about-section'>\n        <ul>\n        <li><strong>1. นาย กัลปพฤกษ์ วิเชียรรัตน์</strong> - <em>ชั้น 6/13 เลขที่ 3 (คนแบกครับอิๆ😎)</em></li>\n        <li><strong>2. นาย ธีราธร มุกดาเพชรรัตน์</strong> - <em>ชั้น 6/13 เลขที่ 13</em></li>\n        <li><strong>3. นาย อภิวิชญ์ อดุลธรรมวิทย์</strong> - <em>ชั้น 6/13 เลขที่ 28</em></li>\n        <li><strong>4. นาย ปัณณวิชญ์ หลีกภัย </strong>  - <em> ชั้น 6/13 เลขที่ 29</em></li>\n        </ul>\n        </div>\n        ", unsafe_allow_html=lllllllllllllII(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1))
+        lIIllIIIIlIIII(""""<style>.about-section ul {
+
+    list-style: none;
+
+    padding: 0;}.about-section li {
+
+    margin-bottom: 0.5rem;
+
+    display: flex; /* Use flexbox /
+
+    align-items: baseline; / Align items to the baseline /}.about-section li strong {
+
+    display: inline-block;
+
+    min-width: 250px; / Adjust this value as needed /
+
+    margin-right: 10px; / Add some space between name and details /}/ Rest of your CSS */</style><div class='about-section'><ul>
+
+    <li><strong>นาย กัลปพฤกษ์ วิเชียรรัตน์</strong> - <em>ชั้น 6/13 เลขที่ 3</em></li>
+
+    <li><strong>นาย ธีราธร มุกดาเพชรรัตน์</strong> - <em>ชั้น 6/13 เลขที่ 13</em></li>
+
+    <li><strong>นาย อภิวิชญ์ อดุลธรรมวิทย์</strong> - <em>ชั้น 6/13 เลขที่ 28</em></li>
+
+    <li><strong>นาย ปัณณวิชญ์ หลีกภัย</strong> - <em>ชั้น 6/13 เลขที่ 29</em></li></ul></div>""", unsafe_allow_html=lllllllllllllII(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1))
