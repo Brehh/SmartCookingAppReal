@@ -8,7 +8,7 @@ API_KEYS = st.secrets["API_KEYS"]
 # --- Page Configuration ---
 st.set_page_config(
     page_title="🍽️ Smart Cooking App 😎",
-    page_icon="🍽️",
+    page_icon="🍳",  # Changed page icon to a frying pan
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -51,7 +51,7 @@ body {
 }
 
 .stApp {
-    /* No background changes here - default Streamlit background */
+    /* Default Streamlit background */
 }
 
 /* Main Container Styles */
@@ -73,41 +73,53 @@ body {
     margin-bottom: 1rem;
 }
 
-/* Mode Selection Radio Buttons - Enhanced Styling */
-.mode-radio {
-    margin-bottom: 2.5rem !important; /* More space */
-}
-.mode-radio > div {
+/* Mode Selection Buttons - Using st.buttons */
+.mode-buttons {
     display: flex;
     justify-content: center;
-    gap: 1.5rem;  /* Larger gap */
+    gap: 20px; /* Spacing between buttons */
+    margin-bottom: 30px;
 }
-.mode-radio label {
-    border: 2px solid #007bff; /* Blue border */
-    border-radius: 25px; /* More rounded */
-    padding: 12px 24px; /* Larger padding */
-    margin: 0; /* Remove margin */
-    transition: all 0.3s ease; /* Smoother transition */
-    font-size: 1.3rem; /* Larger font */
-    font-weight: 600;   /* Semi-bold */
-    background-color: #f8f9fa; /* Light background */
-    color: #007bff; /* Blue text */
-}
-.mode-radio input[type="radio"]:checked + label {
-    background-color: #007bff; /* Blue when selected */
+
+.mode-button {
+    background-color: #007bff; /* Blue */
     color: white;
-    /* No need to repeat border-color */
-}
-.mode-radio input[type="radio"] {
-  display: none; /* Hide the default radio button itself */
+    border: none;
+    border-radius: 8px; /* Rounded */
+    padding: 15px 30px; /* Larger padding */
+    font-size: 1.4rem;  /* Larger font */
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
+.mode-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: translateY(-2px);
+}
 
+.mode-button-selected {
+    background-color: #28a745; /* Green - for the selected mode */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 15px 30px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.mode-button-selected:hover {
+    background-color: #1e7e34;
+    transform: translateY(-2px);
+}
 /* Subheaders */
 .st-expanderHeader {
-    font-size: 1.5rem; /* Larger */
-    font-weight: 700;  /* Bolder */
-    margin-bottom: 0.5rem; /* Space below header */
+    font-size: 1.6rem; /* Even larger */
+    font-weight: 700;
+    margin-bottom: 0.5rem;
 }
 
 /* Input Sections */
@@ -199,11 +211,17 @@ body {
     color: #28a745 !important;
 }
 
-/* Bold and Larger Expander Buttons */
+/* Larger and Bolder Expander Text */
 .st-expander button[data-baseweb="button"] {
-    font-size: 1.3rem !important; /* Larger font */
+    font-size: 1.4rem !important; /* Larger font */
     font-weight: bold !important;   /* Bold text */
 }
+
+/* Change expander icons */
+.st-expander svg {
+    color: #007bff; /* Blue expander icon */
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -211,10 +229,17 @@ body {
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
 
 with st.container(border=True):
-    option = st.radio("🔹 เลือกโหมด:", ["สร้างเมนูจากวัตถุดิบ", "ค้นหาเมนูสำหรับซื้อ"],
-                      horizontal=True, key="mode_select", label_visibility="collapsed")
+    # --- Mode Selection (Using Buttons) ---
+    col1, col2 = st.columns(2)  # Use columns for side-by-side buttons
+    with col1:
+        if st.button("📝 สร้างเมนู", key="create_mode", type='primary' if 'mode' not in st.session_state or st.session_state.mode == "create" else 'secondary'):
+            st.session_state.mode = "create"  # Store the selected mode
+    with col2:
+        if st.button("🔍 ค้นหาเมนู", key="search_mode",  type='primary' if 'mode' in st.session_state and st.session_state.mode == "search" else 'secondary'):
+            st.session_state.mode = "search"
 
-    if option == "สร้างเมนูจากวัตถุดิบ":
+    # --- Conditional Display based on Selected Mode ---
+    if 'mode' not in st.session_state or st.session_state.mode == "create":
         st.subheader("✨ สร้างเมนูแบบกำหนดเอง")
 
         with st.expander("📝 กรอกวัตถุดิบหลัก", expanded=True):
@@ -259,8 +284,7 @@ with st.container(border=True):
             else:
                 st.warning("⚠️ กรุณากรอกวัตถุดิบของคุณ")
 
-
-    elif option == "ค้นหาเมนูสำหรับซื้อ":
+    elif st.session_state.mode == "search":
         st.subheader("✨ ค้นหาเมนูที่ใช่สำหรับคุณ 3 เมนู")
 
         with st.expander("⚙️ ตั้งค่าการค้นหา", expanded=True):
