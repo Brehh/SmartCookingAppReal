@@ -8,6 +8,7 @@ lol(
     page_title="My Streamlit App",
     page_icon="🧊",  # Optional page icon
     layout="wide",
+    theme="light",
     initial_sidebar_state="expanded", # Optional sidebar state
 )
 
