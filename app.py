@@ -247,7 +247,7 @@ with st.container(border=True):
                                        placeholder="เช่น ไข่, หมูสับ, ผักกาด...",
                                        height=120, label_visibility="collapsed")
 
-        with st.expander("⚙️ ปรับแต่งเมนู", expanded=False):
+        with st.expander("⚙️ ปรับแต่งเมนู", expanded=True):
             col1, col2 = st.columns(2)
             with col1:
                 category = st.selectbox("ประเภทอาหาร",
