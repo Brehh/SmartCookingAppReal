@@ -19,7 +19,7 @@ def call_gemini_api(prompt):
     for api_key in API_KEYS:
         try:
             genai.configure(api_key=api_key)
-            model = genai.GenerativeModel("gemini-2.0-flash-lite-preview-02-05")
+            model = genai.GenerativeModel("gemini-2.0-flash-001")
             response = model.generate_content(prompt)
             return response.text.strip()
         except Exception as e:
@@ -291,7 +291,7 @@ with st.container(border=True):
             with col2:
                 taste = st.radio("รสชาติ", ["เผ็ด", "หวาน", "เค็ม", "เปรี้ยว", "ขม", "อูมามิ", "มัน", "ฝาด", "จืด", 'รสจัด',
                                             'กลมกล่อม', 'กลางๆ'], horizontal=True)
-                budget = st.radio("งบประมาณ", ['ต่ำกว่า 100 บาท', '100 - 300 บาท', '300 - 1,000 บาท', 'ไม่จำกัดงบ (มีงบระดับ Mr Beast)'], horizontal=True)
+                budget = st.radio("งบประมาณ", ['ต่ำกว่า 100 บาท', '100 - 300 บาท', '300 - 1,000 บาท', 'ไม่จำกัดงบ (ระดับ Mr Beast)'], horizontal=True)
 
         if st.button("🔎 ค้นหาเมนู", use_container_width=True):
             prompt = (f"ฉันต้องการซื้ออาหาร {category} รสชาติ {taste} งบประมาณ {budget} ใน {country} "
