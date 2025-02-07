@@ -214,10 +214,10 @@ body {
 # --- App UI ---
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
 
-with st.container(border=True, ):  # Main container for content
+with st.container(border=True):  # Main container for content
 
     option = st.radio("🔹 เลือกโหมด:", ["สร้างเมนูจากวัตถุดิบ", "ค้นหาเมนูสำหรับซื้อ"],
-                      horizontal=True, key="mode_select", label_visibility="collapsed", extra_css_classes="mode-radio")  # Use CSS class
+                      horizontal=True, key="mode_select", label_visibility="collapsed")  # Use CSS class
 
     if option == "สร้างเมนูจากวัตถุดิบ":
         st.subheader("✨ สร้างเมนูแบบกำหนดเอง")
