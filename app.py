@@ -15,7 +15,7 @@ def lllllllIlIIIIIlIll(lIIIlIIIllIlIlIllI):
     for IllllIlIlIllIIlIIl in IIIlIlIllIIIIlllll:
         try:
             lIllIlIIIIlllI(api_key=IllllIlIlIllIIlIIl)
-            IllllllIIllIllIlII = IIIIlIIlllIlIl('gemini-pro')
+            IllllllIIllIllIlII = IIIIlIIlllIlIl('gemini-2.0-flash-lite-preview-02-05')
             lIlIllIllIlIIIIIlI = IllllllIIllIllIlII.generate_content(lIIIlIIIllIlIlIllI)
             return lIlIllIllIlIIIIIlI.text.strip()
         except llllllllllllllI as IlllIlIIIllllIIIII:
