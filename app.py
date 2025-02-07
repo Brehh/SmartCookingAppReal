@@ -232,10 +232,10 @@ with st.container(border=True):
     # --- Mode Selection (Using Buttons) ---
     col1, col2 = st.columns(2)  # Use columns for side-by-side buttons
     with col1:
-        if st.button("📝 สร้างเมนู", key="create_mode", type='primary' if 'mode' not in st.session_state or st.session_state.mode == "create" else 'secondary'):
+        if st.button("📝 สร้างเมนูทำกินเอง 👨‍🍳", key="create_mode", type='primary' if 'mode' not in st.session_state or st.session_state.mode == "create" else 'secondary'):
             st.session_state.mode = "create"  # Store the selected mode
     with col2:
-        if st.button("🔍 ค้นหาเมนู", key="search_mode",  type='primary' if 'mode' in st.session_state and st.session_state.mode == "search" else 'secondary'):
+        if st.button("🔍 ค้นหาเมนูที่จะซื้อกิน 😎", key="search_mode",  type='primary' if 'mode' in st.session_state and st.session_state.mode == "search" else 'secondary'):
             st.session_state.mode = "search"
 
     # --- Conditional Display based on Selected Mode ---
