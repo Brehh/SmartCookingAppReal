@@ -251,22 +251,23 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
     with st.expander("🤝 พบกับทีมงาน"):
         st.markdown("""
         <div class='about-section' style='text-align: center;'>
-        <ul style='list-style: none; padding: 0;'>
-        <li style='font-size: 1.2rem; font-weight: bold;'>นาย กัลปพฤกษ์ วิเชียรรัตน์ (คนแบกอิๆ😎)</li>
-        <li style='font-size: 1rem;'><em>ชั้น 6/13 เลขที่ 3</em></li>
-        <img src='https://images.pexels.com/photos/445109/pexels-photo-445109.jpeg?cs=srgb&dl=pexels-trinitykubassek-445109.jpg&fm=jpg' width='300px' style='display: block; margin: auto;'>
+        <ul style='list-style: none; padding: 0; display: flex; flex-direction: column; align-items: center;'>
         
-        <li style='font-size: 1.2rem; font-weight: bold;'>นาย ธีราธร มุกดาเพชรรัตน์</li>
-        <li style='font-size: 1rem;'><em>ชั้น 6/13 เลขที่ 13</em></li>
-        <img src='https://images.pexels.com/photos/445109/pexels-photo-445109.jpeg?cs=srgb&dl=pexels-trinitykubassek-445109.jpg&fm=jpg' width='300px' style='display: block; margin: auto;'>
+        <li style='font-size: 1.5rem; font-weight: bold; margin-top: 20px;'>นาย กัลปพฤกษ์ วิเชียรรัตน์ (คนแบกอิๆ😎)</li>
+        <li style='font-size: 1.2rem;'><em>ชั้น 6/13 เลขที่ 3</em></li>
+        <img src='https://media.istockphoto.com/id/176799603/photo/3-4-profile-portrait.jpg?s=612x612&w=0&k=20&c=ArfYQTh-m4PGKwNyWypZWl6Q918m71g6aj5y8s4k1bA=' width='350px' style='display: block; margin: auto;'>
         
-        <li style='font-size: 1.2rem; font-weight: bold;'>นาย อภิวิชญ์ อดุลธรรมวิทย์</li>
-        <li style='font-size: 1rem;'><em>ชั้น 6/13 เลขที่ 28</em></li>
-        <img src='https://images.pexels.com/photos/445109/pexels-photo-445109.jpeg?cs=srgb&dl=pexels-trinitykubassek-445109.jpg&fm=jpg' width='300px' style='display: block; margin: auto;'>
+        <li style='font-size: 1.5rem; font-weight: bold; margin-top: 20px;'>นาย ธีราธร มุกดาเพชรรัตน์</li>
+        <li style='font-size: 1.2rem;'><em>ชั้น 6/13 เลขที่ 13</em></li>
+        <img src='https://media.istockphoto.com/id/176799603/photo/3-4-profile-portrait.jpg?s=612x612&w=0&k=20&c=ArfYQTh-m4PGKwNyWypZWl6Q918m71g6aj5y8s4k1bA=' width='350px' style='display: block; margin: auto;'>
         
-        <li style='font-size: 1.2rem; font-weight: bold;'>นาย ปัณณวิชญ์ หลีกภัย</li>
-        <li style='font-size: 1rem;'><em>ชั้น 6/13 เลขที่ 29</em></li>
-        <img src='https://images.pexels.com/photos/445109/pexels-photo-445109.jpeg?cs=srgb&dl=pexels-trinitykubassek-445109.jpg&fm=jpg' width='300px' style='display: block; margin: auto;'>
+        <li style='font-size: 1.5rem; font-weight: bold; margin-top: 20px;'>นาย อภิวิชญ์ อดุลธรรมวิทย์</li>
+        <li style='font-size: 1.2rem;'><em>ชั้น 6/13 เลขที่ 28</em></li>
+        <img src='https://media.istockphoto.com/id/176799603/photo/3-4-profile-portrait.jpg?s=612x612&w=0&k=20&c=ArfYQTh-m4PGKwNyWypZWl6Q918m71g6aj5y8s4k1bA=' width='350px' style='display: block; margin: auto;'>
+        
+        <li style='font-size: 1.5rem; font-weight: bold; margin-top: 20px;'>นาย ปัณณวิชญ์ หลีกภัย</li>
+        <li style='font-size: 1.2rem;'><em>ชั้น 6/13 เลขที่ 29</em></li>
+        <img src='https://media.istockphoto.com/id/176799603/photo/3-4-profile-portrait.jpg?s=612x612&w=0&k=20&c=ArfYQTh-m4PGKwNyWypZWl6Q918m71g6aj5y8s4k1bA=' width='350px' style='display: block; margin: auto;'>
         </ul>
         </div>
         """, unsafe_allow_html=True)
