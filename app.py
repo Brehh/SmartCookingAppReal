@@ -79,7 +79,7 @@ body.dark-mode {
 if st.button('🌙 สลับเป็น Dark Mode'):
     st.markdown("<script>document.body.classList.toggle('dark-mode');</script>", unsafe_allow_html=True)
 
-if st.button(☀️ สลับเป็น Light Mode'):
+if st.button('☀️ สลับเป็น Light Mode'):
     st.markdown("<script>document.body.classList.remove('dark-mode');</script>", unsafe_allow_html=True)
 
 lllllllllllllll, llllllllllllllI, lllllllllllllIl, lllllllllllllII = str, Exception, enumerate, bool
