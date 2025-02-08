@@ -11,7 +11,7 @@ import time
 COUNTER_FILE = "visitor_count.txt"
 ACTIVE_USERS_FILE = "active_users.txt"
 SESSION_STORAGE = "session_storage.txt"
-ACTIVE_TIMEOUT = 60  # Consider users active if they interacted within 60 seconds
+ACTIVE_TIMEOUT = 10  # Consider users active if they interacted within 60 seconds
 
 def get_visitor_count():
     """Gets the current visitor count from a file."""
