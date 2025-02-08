@@ -58,20 +58,11 @@ def get_active_users():
 
 def update_active_user():
     """Updates the current user's last seen time in the active users file, keeping session ID consistent."""
-    if "session_id" not in st.session_state:
-        try:
-            with open(SESSION_STORAGE, "r") as f:
-                stored_id = f.read().strip()
-                if stored_id:
-                    st.session_state.session_id = stored_id
-        except FileNotFoundError:
-            pass
-        
-        # Generate a new session ID if none exists
-        if "session_id" not in st.session_state:
-            st.session_state.session_id = str(uuid.uuid4())
-            with open(SESSION_STORAGE, "w") as f:
-                f.write(st.session_state.session_id)
+    if "session_id" not in st.session_state or st.session_state.get("force_new_session", False):
+        st.session_state.session_id = str(uuid.uuid4())
+        with open(SESSION_STORAGE, "w") as f:
+            f.write(st.session_state.session_id)
+        st.session_state.force_new_session = False
     
     user_id = st.session_state.session_id
     current_time = time.time()
@@ -90,7 +81,6 @@ def update_active_user():
     with open(ACTIVE_USERS_FILE, "w") as f:
         for uid, last_seen in active_users.items():
             f.write(f"{uid},{last_seen}\n")
-
 
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
