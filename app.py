@@ -13,13 +13,10 @@ def get_visitor_count():
     """Gets the current visitor count from a file."""
     try:
         with open(COUNTER_FILE, "r") as f:
-            content = f.read().strip()  # Read and remove any extra whitespace
-            if content:  # Check if the file is not empty
-                return int(content)
-            else:
-                return 0  # Return 0 if the file is empty
+            content = f.read().strip()
+            return int(content) if content else 0  # Handle empty file
     except FileNotFoundError:
-        # If the file doesn't exist, create it and initialize the count.
+        # Create the file and initialize to 0 if it doesn't exist
         with open(COUNTER_FILE, "w") as f:
             f.write("0")
         return 0
@@ -30,25 +27,23 @@ def generate_session_id(ip_address, user_agent):
     data_to_hash = f"{ip_address}-{user_agent}-{now.strftime('%Y-%m-%d')}"
     return hashlib.sha256(data_to_hash.encode()).hexdigest()
 
-def has_visited_today(session_id):
+def has_visited_today(session_id, today_str): # Added today_str argument
     """Checks if a session ID has visited today."""
     try:
         with open(SESSION_IDS_FILE, "r") as f:
             for line in f:
                 if session_id == line.strip():
-                    return True  # ID found
-        return False  # ID not found
-    except FileNotFoundError:
-        # File doesn't exist, so hasn't visited. Create the file.
-        with open(SESSION_IDS_FILE, "w") as f:
-            pass  # Just create the file, no need to write anything yet.
+                    return True
         return False
+    except FileNotFoundError:
+         with open(SESSION_IDS_FILE, "w") as f: #create file if not exists
+            pass
+         return False
 
 def record_visit(session_id):
     """Records a visit by adding the session ID to the file."""
     with open(SESSION_IDS_FILE, "a") as f:
         f.write(session_id + "\n")
-
 
 def increment_visitor_count():
     """Increments the visitor count if a new, unique session is detected."""
@@ -61,27 +56,29 @@ def increment_visitor_count():
             ip_address = request_context.remote_ip
             user_agent = request_context.headers.get("User-Agent", "unknown")
     except AttributeError:
-        pass  # It's okay if this fails in some environments
+        pass
     except Exception as e:
         print(f"Error getting request context: {e}")
         st.error(f"Error getting request context: {e}")
 
     session_id = generate_session_id(ip_address, user_agent)
-    #st.write(f"Session ID: {session_id}")  # Debugging output
+    today_str = datetime.date.today().strftime('%Y-%m-%d') # Get today's date
 
-    if not has_visited_today(session_id):
-        try: #try catch for file operations
-            count = get_visitor_count()
-            count += 1
-            with open(COUNTER_FILE, "w") as f:
-                f.write(str(count))
-            record_visit(session_id)
-            return count, True #new visit
+    if not has_visited_today(session_id, today_str):  # Pass today_str
+        try: #try catch file operation
+          count = get_visitor_count()
+          count += 1
+          with open(COUNTER_FILE, "w") as f:
+              f.write(str(count))
+          record_visit(session_id)
+          return count, True  # New visit
         except Exception as e:
-            print(f"Error increment: {e}")
-            return get_visitor_count(), False
+          print(f"Error increment file : {e}")
+          return get_visitor_count(), False
     else:
-        return get_visitor_count(), False #old visit
+        return get_visitor_count(), False  # Existing visit
+
+
 
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
