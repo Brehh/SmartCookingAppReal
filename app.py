@@ -501,13 +501,14 @@ st.markdown("---")
 st.subheader("🔧 Admin Panel")
 admin_password = st.text_input("Enter Admin Password:", type="password")
 if admin_password == st.secrets["ADMIN_PASSWORD"]:
-    if st.button("Reset Visitor Count"):
+    if st.button("Reset Visitor Count and Active Users"):
         with open(COUNTER_FILE, "w") as f:
             f.write("0")
         with open(ACTIVE_USERS_FILE, "w") as f:
             f.truncate(0)
         with open(SESSION_STORAGE, "w") as f:
             f.truncate(0)
+        st.session_state.clear()
         st.success("Visitor count and active users reset to 0.")
         st.rerun()
     
@@ -528,6 +529,7 @@ if admin_password == st.secrets["ADMIN_PASSWORD"]:
         st.text_area("Active Users File Content:", read_file_content(ACTIVE_USERS_FILE), height=100)
 else:
     st.warning("Incorrect password or unauthorized access.")
+
 
 
 
