@@ -310,6 +310,8 @@ body {
 visitor_count, new_visit = increment_visitor_count()
 if new_visit:
     st.toast("🎉 New visitor!")
+else:
+    st.toast("🎉 Wellcome Back")
 st.markdown(f"<div class='visitor-count'>Visitors: {visitor_count}</div>", unsafe_allow_html=True)
 
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
