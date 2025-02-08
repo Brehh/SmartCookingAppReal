@@ -19,7 +19,7 @@ st.set_page_config(
 COUNTER_FILE = "visitor_count.txt"
 ACTIVE_USERS_FILE = "active_users.txt"
 SESSION_STORAGE = "session_storage.txt"
-ACTIVE_TIMEOUT = 60  # Reduce active timeout to 10 seconds for rapid checking
+ACTIVE_TIMEOUT = 1  # Reduce active timeout to 10 seconds for rapid checking
 PING_INTERVAL = 3  # Ping every 3 seconds to detect active users
 
 
