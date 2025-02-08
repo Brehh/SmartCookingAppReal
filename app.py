@@ -330,7 +330,7 @@ body {
         font-weight: bold;
     }
     .visitor-info {
-        top: -10px;
+        top: -15px;
         font-size: 1rem;
         padding: 0 10px;
     }
