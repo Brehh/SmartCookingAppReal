@@ -47,7 +47,13 @@ def has_visited_today(session_id):
     try:
         with open(SESSION_IDS_FILE, "r") as f:
             for line in f:
-                stored_session_id, stored_date = line.strip().split(",")
+                line = line.strip()
+                if not line:
+                    continue  # Skip empty lines
+                parts = line.split(",")
+                if len(parts) != 2:
+                    continue  # Skip malformed lines
+                stored_session_id, stored_date = parts
                 if stored_session_id == session_id and stored_date == today_str:
                     return True
         return False
