@@ -1,6 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 import textwrap
+import datetime
 import os
 import time
 import uuid
@@ -13,8 +14,6 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- Visitor Counter, Active Users, API Keys, Helper Functions (same as before) ---
-# (Include all the code from get_visitor_count to process_menus here)
 # --- Visitor Counter (File-based persistence) ---
 COUNTER_FILE = "visitor_count.txt"
 ACTIVE_USERS_FILE = "active_users.txt"
@@ -183,29 +182,40 @@ body {
     margin-bottom: 30px;
 }
 
-
-/* --- MODIFIED BUTTON STYLES --- */
-.create-button {
-    background-color: #28a745; /* Green */
-    color: white;
-}
-.create-button:hover {
-    background-color: #218838; /* Darker Green */
-}
-
-.search-button {
+.mode-button {
     background-color: #007bff; /* Blue */
     color: white;
+    border: none;
+    border-radius: 8px; /* Rounded */
+    padding: 15px 30px; /* Larger padding */
+    font-size: 1.4rem;  /* Larger font */
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
-.search-button:hover {
-    background-color: #0056b3; /* Darker Blue */
+
+.mode-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: translateY(-2px);
 }
 
 .mode-button-selected {
-   /* Keep selected styles, but adjust colors as needed */
+    background-color: #4379ff; /* Green - for the selected mode */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 15px 30px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
-
-
+.mode-button-selected:hover {
+    background-color: #1e7e34;
+    transform: translateY(-2px);
+}
 /* Subheaders */
 .st-expanderHeader {
     font-size: 1.6rem; /* Even larger */
@@ -337,7 +347,6 @@ body {
 </style>
 """, unsafe_allow_html=True)
 
-
 # --- Increment Visitor Count and Update Active Users ---
 visitor_count = increment_visitor_count()
 update_active_user()
@@ -360,14 +369,14 @@ with st.container(border=True):
     col1, col2 = st.columns(2)
 
     with col1:
-        button_class = "create-button" if st.session_state.mode == "create" else ""
-        if st.button("📝 สร้างเมนูอาหาร", key="create_mode",  css_class=button_class, use_container_width=True):
+        if st.button("📝 สร้างเมนูอาหาร", key="create_mode", type="primary" if st.session_state.mode == "create" else "secondary", use_container_width=True):
             st.session_state.mode = "create"
 
+
     with col2:
-        button_class = "search-button" if st.session_state.mode == "search" else ""
-        if st.button("🔍 ค้นหารายการอาหาร", key="search_mode", css_class=button_class, use_container_width=True):
+        if st.button("🔍 ค้นหารายการอาหาร", key="search_mode",  type="primary" if st.session_state.mode == "search" else "secondary", use_container_width=True):
             st.session_state.mode = "search"
+
 
     # --- Conditional Display based on Selected Mode ---
     if st.session_state.mode == "create":
@@ -528,7 +537,7 @@ if admin_password == st.secrets["ADMIN_PASSWORD"]:
             f.truncate(0)
         st.success("Visitor count and active users reset to 0.")
         st.rerun()
-      
+    
     # --- View File Contents ---
     st.subheader("📂 View Stored Data")
     def read_file_content(file_path):
@@ -538,11 +547,11 @@ if admin_password == st.secrets["ADMIN_PASSWORD"]:
                 return content if content else "(Empty File)"
         except FileNotFoundError:
             return "(File Not Found)"
-      
+    
     if st.button("View Visitor Count File"):
         st.text_area("Visitor Count File Content:", read_file_content(COUNTER_FILE), height=70)
-      
+    
     if st.button("View Active Users File"):
         st.text_area("Active Users File Content:", read_file_content(ACTIVE_USERS_FILE), height=100)
 else:
-  st.warning("Incorrect password or unauthorized access.")
+    st.warning("Incorrect password or unauthorized access.")
