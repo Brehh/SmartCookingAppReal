@@ -1,7 +1,6 @@
 import streamlit as st
 import google.generativeai as genai
 import textwrap
-import os
 import hashlib
 import datetime
 
@@ -42,12 +41,18 @@ def increment_visitor_count():
         # We already have a session ID for this user.
         new_visit = False
 
-    # 2. Check if it's a *new* visit (first time in this session).
-    if new_visit:
+    # 2. Check against *all* previously visited sessions (stored in a set).
+    visited_sessions = st.session_state.get("visited_sessions", set())
+
+    if st.session_state.session_id not in visited_sessions:
+        # Increment and store the count in session state
         st.session_state.visitor_count = st.session_state.get("visitor_count", 0) + 1
-        return st.session_state.visitor_count, True
+        visited_sessions.add(st.session_state.session_id)
+        st.session_state.visited_sessions = visited_sessions  # MUST update session state!
+        return st.session_state.visitor_count, True  # New visit
     else:
-        return st.session_state.visitor_count, False
+        return st.session_state.visitor_count, False  # Existing visit
+
 
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
@@ -96,11 +101,9 @@ st.markdown("""
 body {
     font-family: 'Kanit', sans-serif;
 }
-
 .stApp {
     /* Default Streamlit background */
 }
-
 /* Main Container Styles */
 .main-container {
     border-radius: 15px;
@@ -109,7 +112,6 @@ body {
     margin-bottom: 20px;
     border: 2px solid #e0e0e0;
 }
-
 /* Header */
 .title {
     color: #343a40;
@@ -119,7 +121,6 @@ body {
     font-weight: 700;
     margin-bottom: 1rem;
 }
-
 /* Mode Selection Buttons - Using st.buttons */
 .mode-buttons {
     display: flex;
@@ -127,7 +128,6 @@ body {
     gap: 20px; /* Spacing between buttons */
     margin-bottom: 30px;
 }
-
 .mode-button {
     background-color: #007bff; /* Blue */
     color: white;
@@ -140,12 +140,10 @@ body {
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
-
 .mode-button:hover {
     background-color: #0056b3; /* Darker blue on hover */
     transform: translateY(-2px);
 }
-
 .mode-button-selected {
     background-color: #28a745; /* Green - for the selected mode */
     color: white;
@@ -168,23 +166,19 @@ body {
     font-weight: 700;
     margin-bottom: 0.5rem;
 }
-
 /* Input Sections */
 .input-section {
     margin-bottom: 1rem;
 }
-
 /* Input Fields */
 .stTextInput, .stSelectbox, .stSlider, .stRadio, .stNumberInput {
     margin-bottom: 0.8rem;
 }
-
 /* Text Area */
 .stTextArea>div>div>textarea{
     border-color:#3498db;
     border-radius: 8px;
 }
-
 /* Buttons */
 .stButton>button {
     background-color: #28a745;
@@ -197,18 +191,15 @@ body {
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
     width: 100%;
 }
-
 .stButton>button:hover {
     background-color: #218838;
     transform: translateY(-3px);
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
-
 .stButton>button:active {
     transform: translateY(0);
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
-
 /* Menu Columns */
 .menu-column {
     border-radius: 12px;
@@ -218,24 +209,20 @@ body {
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     border: 1px solid #dee2e6;
 }
-
 .menu-column:hover {
     transform: scale(1.02);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
-
 .menu-column h3 {
     color: #28a745;
     margin-bottom: 12px;
     font-size: 1.5rem;
     font-weight: 600;
 }
-
 .menu-item {
     font-size: 1.05rem;
     line-height: 1.7;
 }
-
 /* About Section */
 .about-section {
     border-radius: 12px;
@@ -248,27 +235,22 @@ body {
     list-style: none;
     padding: 0;
 }
-
 .about-section li {
     margin-bottom: 0.6rem;
 }
-
 /* Spinners */
 .st-cf {
     color: #28a745 !important;
 }
-
 /* Larger and Bolder Expander Text */
 .st-expander button[data-baseweb="button"] {
     font-size: 1.4rem !important; /* Larger font */
     font-weight: bold !important;   /* Bold text */
 }
-
 /* Change expander icons */
 .st-expander svg {
     color: #007bff; /* Blue expander icon */
 }
-
 /* Visitor Count Styles */
 .visitor-count {
     position: absolute;
@@ -277,7 +259,6 @@ body {
     font-size: 1.2rem;
     color: #666;
 }
-
 </style>
 """, unsafe_allow_html=True)
 
