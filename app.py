@@ -184,7 +184,7 @@ body {
 }
 
 .mode-button-selected {
-    background-color: #28a745; /* Green - for the selected mode */
+    background-color: #4379ff; /* Green - for the selected mode */
     color: white;
     border: none;
     border-radius: 8px;
