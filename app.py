@@ -15,7 +15,9 @@ def get_visitor_count():
         with open(COUNTER_FILE, "r") as f:
             count = int(f.read())
     except FileNotFoundError:
-        count = 0
+        count = 0  # Initialize the count if the file doesn't exist
+        with open(COUNTER_FILE, "w") as f:  # Create the file
+            f.write("0")
     return count
 
 def generate_session_id(ip_address, user_agent):
@@ -33,6 +35,8 @@ def has_visited_today(session_id):
                     return True
         return False
     except FileNotFoundError:
+        with open(SESSION_IDS_FILE, "w") as f: # Create file if not exists
+          pass
         return False
 
 def record_visit(session_id):
@@ -45,7 +49,8 @@ def increment_visitor_count():
     # Get client IP address (works on Streamlit Cloud and locally)
     try:
         # Use st.query_params instead of st.experimental_get_query_params
-        ip_address = st.query_params.get("ip", ["unknown"])[0]  # Get IP, default to "unknown"
+        # Crucial fix:  st.query_params returns a *list* of values, even if there's only one.
+        ip_address = st.query_params.get("ip", ["unknown"])[0]  # Get the *first* element
     except (KeyError, IndexError):
         try:
             # For local development, fall back to the remote address (less accurate)
@@ -55,6 +60,8 @@ def increment_visitor_count():
     # Get user agent
     try:
         user_agent = st.runtime.get_instance().streamlit_request.headers.get("User-Agent")
+        if user_agent is None: # Handle missing User-Agent
+          user_agent = "unknown"
     except:
         user_agent = "unknown"
 
