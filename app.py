@@ -6,7 +6,6 @@ import datetime
 import os
 import uuid
 import time
-import threading
 
 # --- Visitor Counter (File-based persistence) ---
 COUNTER_FILE = "visitor_count.txt"
@@ -58,32 +57,39 @@ def get_active_users():
 
 
 def update_active_user():
-    """Updates the current user's last seen time in the active users file, continuously pinging to keep session active."""
+    """Updates the current user's last seen time in the active users file, keeping session ID consistent."""
     if "session_id" not in st.session_state:
-        st.session_state.session_id = str(uuid.uuid4())
+        try:
+            with open(SESSION_STORAGE, "r") as f:
+                stored_id = f.read().strip()
+                if stored_id:
+                    st.session_state.session_id = stored_id
+        except FileNotFoundError:
+            pass
+        
+        # Generate a new session ID if none exists
+        if "session_id" not in st.session_state:
+            st.session_state.session_id = str(uuid.uuid4())
+            with open(SESSION_STORAGE, "w") as f:
+                f.write(st.session_state.session_id)
+    
     user_id = st.session_state.session_id
+    current_time = time.time()
     
-    def ping_user():
-        while True:
-            time.sleep(PING_INTERVAL)
-            current_time = time.time()
-            active_users = {}
-            try:
-                with open(ACTIVE_USERS_FILE, "r") as f:
-                    for line in f:
-                        existing_user_id, last_seen = line.strip().split(",")
-                        active_users[existing_user_id] = last_seen
-            except FileNotFoundError:
-                pass
-            
-            # Update the current user's last seen time
-            active_users[user_id] = str(current_time)
-            with open(ACTIVE_USERS_FILE, "w") as f:
-                for uid, last_seen in active_users.items():
-                    f.write(f"{uid},{last_seen}\n")
+    active_users = {}
+    try:
+        with open(ACTIVE_USERS_FILE, "r") as f:
+            for line in f:
+                existing_user_id, last_seen = line.strip().split(",")
+                active_users[existing_user_id] = last_seen
+    except FileNotFoundError:
+        pass
     
-    # Start the pinging process in a separate thread
-    threading.Thread(target=ping_user, daemon=True).start()
+    # Update the current user's last seen time
+    active_users[user_id] = str(current_time)
+    with open(ACTIVE_USERS_FILE, "w") as f:
+        for uid, last_seen in active_users.items():
+            f.write(f"{uid},{last_seen}\n")
 
 
 # --- API Key Setup (From Streamlit Secrets) ---
