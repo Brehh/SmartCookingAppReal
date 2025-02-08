@@ -1,23 +1,47 @@
 import streamlit as st
 import google.generativeai as genai
 import textwrap
+import os
 import hashlib
 import datetime
 
-# --- Visitor Counter (Session-based, using st.session_state) ---
+# --- Visitor Counter (File-based) ---
+COUNTER_FILE = os.path.join(os.path.dirname(__file__), "visitor_count.txt")
+SESSION_IDS_FILE = os.path.join(os.path.dirname(__file__), "session_ids.txt")
+
+def get_visitor_count():
+    """Gets the current visitor count from a file."""
+    try:
+        with open(COUNTER_FILE, "r") as f:
+            return int(f.read())
+    except FileNotFoundError:
+        return 0  # Initialize if file doesn't exist
 
 def generate_session_id(ip_address, user_agent):
-    """Generates a unique session ID based on IP, user agent, and date."""
+    """Generates a unique session ID."""
     now = datetime.datetime.now()
     data_to_hash = f"{ip_address}-{user_agent}-{now.strftime('%Y-%m-%d')}"
     return hashlib.sha256(data_to_hash.encode()).hexdigest()
 
-def get_visitor_count():
-    """Gets the current visitor count from session state."""
-    return st.session_state.get("visitor_count", 0)
+def has_visited_today(session_id):
+    """Checks if a session ID has visited today."""
+    try:
+        with open(SESSION_IDS_FILE, "r") as f:
+            for line in f:
+                if session_id == line.strip():
+                    return True
+        return False
+    except FileNotFoundError:
+        return False
+
+def record_visit(session_id):
+    """Records a visit by adding the session ID to the file."""
+    with open(SESSION_IDS_FILE, "a") as f:
+        f.write(session_id + "\n")
+
 
 def increment_visitor_count():
-    """Increments visitor count if it's a new unique session for the day."""
+    """Increments the visitor count if a new, unique session is detected."""
     ip_address = "unknown"
     user_agent = "unknown"
 
@@ -27,33 +51,26 @@ def increment_visitor_count():
             ip_address = request_context.remote_ip
             user_agent = request_context.headers.get("User-Agent", "unknown")
     except AttributeError:
-        pass  # It's okay if this fails in some environments
+        pass
     except Exception as e:
         print(f"Error getting request context: {e}")
         st.error(f"Error getting request context: {e}")
 
-    # 1. Get or create the session ID *from session state*.
-    if 'session_id' not in st.session_state:
-        # This is the *first* time in this session.  Generate a new ID.
-        st.session_state.session_id = generate_session_id(ip_address, user_agent)
-        new_visit = True
-    else:
-        # We already have a session ID for this user.
-        new_visit = False
+    session_id = generate_session_id(ip_address, user_agent)
 
-    # 2. Check against *all* previously visited sessions (stored in a set).
-    visited_sessions = st.session_state.get("visited_sessions", set())
-
-    if st.session_state.session_id not in visited_sessions:
-        # Increment and store the count in session state
-        st.session_state.visitor_count = st.session_state.get("visitor_count", 0) + 1
-        # *CRITICAL FIX:* Add to a *copy* of the set, then reassign.
-        visited_sessions_copy = visited_sessions.copy()  # Create a copy
-        visited_sessions_copy.add(st.session_state.session_id) # Modify the copy
-        st.session_state.visited_sessions = visited_sessions_copy # Reassign
-        return st.session_state.visitor_count, True  # New visit
+    if not has_visited_today(session_id):
+        try: #use try except to handle error
+            count = get_visitor_count()
+            count += 1
+            with open(COUNTER_FILE, "w") as f:
+                f.write(str(count))
+            record_visit(session_id)
+            return count, True  # New visit
+        except Exception as e:
+            print(f"Error increment: {e}")
+            return get_visitor_count(), False
     else:
-        return st.session_state.visitor_count, False  # Existing visit
+        return get_visitor_count(), False  # Existing visit
 
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
@@ -221,7 +238,7 @@ body {
     padding: 25px;
     margin-bottom: 15px;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.25s ease, box-shadow: 0.25s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
     border: 1px solid #dee2e6;
 }
 
@@ -290,9 +307,9 @@ body {
 # --- App UI ---
 
 # --- Increment Visitor Count and Display ---
-visitor_count, new_visit = increment_visitor_count()  # Get count *and* if it's a new visit
+visitor_count, new_visit = increment_visitor_count()
 if new_visit:
-  st.toast("🎉 New visitor!")
+    st.toast("🎉 New visitor!")
 st.markdown(f"<div class='visitor-count'>Visitors: {visitor_count}</div>", unsafe_allow_html=True)
 
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
