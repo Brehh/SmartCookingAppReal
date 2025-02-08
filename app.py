@@ -18,14 +18,18 @@ def get_visitor_count():
 
 def increment_visitor_count():
     """Increments visitor count only if a new session is detected."""
+    if "visitor_count" not in st.session_state:
+        st.session_state.visitor_count = 0  # Ensure it exists before incrementing
+    
+    if "visited_sessions" not in st.session_state:
+        st.session_state.visited_sessions = set()
+    
     if "session_id" not in st.session_state:
         st.session_state.session_id = hashlib.sha256(str(datetime.datetime.now().timestamp()).encode()).hexdigest()
-        if "visited_sessions" not in st.session_state:
-            st.session_state.visited_sessions = set()
-        
-        if st.session_state.session_id not in st.session_state.visited_sessions:
-            st.session_state.visitor_count += 1
-            st.session_state.visited_sessions.add(st.session_state.session_id)
+    
+    if st.session_state.session_id not in st.session_state.visited_sessions:
+        st.session_state.visitor_count += 1
+        st.session_state.visited_sessions.add(st.session_state.session_id)
             
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
@@ -239,8 +243,7 @@ body {
 increment_visitor_count()
 
 # --- Store Visitor Count in Session State Globally ---
-if "global_visitor_count" not in st.session_state:
-    st.session_state.global_visitor_count = get_visitor_count()
+st.session_state.global_visitor_count = get_visitor_count()
 
 # --- App UI ---
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
