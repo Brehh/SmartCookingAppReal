@@ -510,11 +510,11 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
         <li style='font-size: 1.3rem;'><em>ชั้น 6/13 เลขที่ 3</em></li>
         <img src='https://media-hosting.imagekit.io//1b3ed8f3573a4e71/IMG_20241011_135949_649.webp?Expires=1833623214&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=XkV2~CAZ1JL5DLoYHTK43-DH1HSmbcpRfZqqgUbS~YZHNtsgvL-UkoVf9iDz8-pZKNYsLqdyFOahcMiuMR1ao1FQiu3I2iqWiSmsoBiHOfr3OxBObD32WF30wS6NTbMCg7MmWPKCratj29lGI0fhN~33HlEnQ50hMnDRnH9CKvwY3tOWxM2sTNcwZ5J1Q1nP5wCAUwCCFaeNxJwFxCWLBdR268qhrfTxu9-pgodzqM1~Jv0bj3UTjx2i7IMm7eLjfU14x4aE9HUjTKrgvzsadlHSzJgYIyhQvetbRsEVPeIiiIz9aMo3YzK-JCz3CPMnoU-7aBLe5yLmVOEeHvMTIQ__' width='250px' style='border-radius: 10%; margin-bottom: 20px;'>
 
-        <li style='font-size: 1.6rem; font-weight: bold; margin-top: 10px;'>นาย ธีราธร มุกดาเพชรรัตน์</li>
+        <li style='font-size: 1.6rem; font-weight: bold; margin-top: 10px;'>นาย ธีราธร มุกดาเพชรรัตน์ (ผู้ช่วย No.1)</li>
         <li style='font-size: 1.3rem;'><em>ชั้น 6/13 เลขที่ 13</em></li>
         <img src='https://media-hosting.imagekit.io//794cd2dd43b24aff/perth_tm2025_02_08_18_38_478aae62c6-a109-49ec-aef1-8152096b5149.jpg?Expires=1833622873&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=u9sNP10b88y78jCRRUyLwn3OeHhsL7C0QbvaOcjCmOSGCD69RWN6e08aV19Se-7mknqcTF~zU9~snvhpFExvNR9jMhDubAePljCWIhBzzbpsRsOQ5akdEMa9AXVUOuXIzFN-igpqs-g9t8y~TqJ6mOO7daYkGa~L6Pnp3~G47pI3yWS5DVZ5hXcSHK7GQmupabIkfaaM-67FPYu7wF96vGlfatkSqA5zzIUGeX0yc~3kzI7dlCzqzqaXRKng6upQ07299g0LwFv3LBRO22VffO1fZr82TxnXUdEPcfmci-esT9LH6JEKwRET2fRLklG~qBRLc8wnzS0RdyrYjXRhEA__' width='250px' style='border-radius: 50%; margin-bottom: 20px;'>
 
-        <li style='font-size: 1.6rem; font-weight: bold; margin-top: 10px;'>นาย อภิวิชญ์ อดุลธรรมวิทย์</li>
+        <li style='font-size: 1.6rem; font-weight: bold; margin-top: 10px;'>นาย อภิวิชญ์ อดุลธรรมวิทย์ (ผู้ช่วย No.2)</li>
         <li style='font-size: 1.3rem;'><em>ชั้น 6/13 เลขที่ 28</em></li>
         <img src='https://media.istockphoto.com/id/176799603/photo/3-4-profile-portrait.jpg?s=612x612&w=0&k=20&c=ArfYQTh-m4PGKwNyWypZWl6Q918m71g6aj5y8s4k1bA=' width='250px' style='border-radius: 50%; margin-bottom: 20px;'>
 
