@@ -4,6 +4,7 @@ import textwrap
 import hashlib
 import datetime
 import os
+import uuid
 
 # --- Visitor Counter (File-based persistence) ---
 COUNTER_FILE = "visitor_count.txt"
@@ -22,12 +23,22 @@ def get_visitor_count():
         return 0
 
 def generate_session_id():
-    """Generates a persistent session ID using a more stable identifier."""
+    """Generates a persistent session ID using local storage and backup file."""
     if "session_id" not in st.session_state:
-        unique_identifier = str(st.experimental_user.hash if hasattr(st.experimental_user, 'hash') else datetime.datetime.now().timestamp())
-        st.session_state.session_id = hashlib.sha256(unique_identifier.encode()).hexdigest()
-        with open(SESSION_STORAGE, "a") as f:
-            f.write(f"{st.session_state.session_id}\n")
+        # Attempt to retrieve stored session ID from backup file
+        try:
+            with open(SESSION_STORAGE, "r") as f:
+                stored_id = f.read().strip()
+                if stored_id:
+                    st.session_state.session_id = stored_id
+                    return stored_id
+        except FileNotFoundError:
+            pass
+        
+        # Generate a new session ID only if none exists
+        st.session_state.session_id = str(uuid.uuid4())
+        with open(SESSION_STORAGE, "w") as f:
+            f.write(st.session_state.session_id)
     return st.session_state.session_id
 
 def has_visited_today(session_id):
@@ -466,37 +477,40 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
         """, unsafe_allow_html=True)
 
 
-# --- Admin Section (Hidden) ---
+# --- Admin Panel to Reset Visitor Count ---
 st.markdown("---")
 st.subheader("🔧 Admin Panel")
 admin_password = st.text_input("Enter Admin Password:", type="password")
 if admin_password == st.secrets["ADMIN_PASSWORD"]:
+    # --- Admin Panel to View Files ---
+    st.markdown("---")
+    st.subheader("📂 View Stored Data")
+    
+    if admin_password == st.secrets["ADMIN_PASSWORD"]:
+        if st.button("View Visitor Count File"):
+            try:
+                with open(COUNTER_FILE, "r") as f:
+                    visitor_data = f.read()
+                st.text_area("Visitor Count File Content:", visitor_data, height=100)
+            except FileNotFoundError:
+                st.warning("Visitor count file not found.")
+    
+        if st.button("View Session IDs File"):
+            try:
+                with open(SESSION_IDS_FILE, "r") as f:
+                    session_data = f.read()
+                st.text_area("Session IDs File Content:", session_data, height=200)
+            except FileNotFoundError:
+                st.warning("Session IDs file not found.")
     if st.button("Reset Visitor Count"):
         with open(COUNTER_FILE, "w") as f:
             f.write("0")
         with open(SESSION_IDS_FILE, "w") as f:
             f.truncate(0)
+        with open(SESSION_STORAGE, "w") as f:
+            f.truncate(0)
         st.success("Visitor count reset to 0.")
         st.rerun()
 else:
     st.warning("Incorrect password or unauthorized access.")
-# --- Admin Panel to View Files ---
-st.markdown("---")
-st.subheader("📂 View Stored Data")
 
-if admin_password == st.secrets["ADMIN_PASSWORD"]:
-    if st.button("View Visitor Count File"):
-        try:
-            with open(COUNTER_FILE, "r") as f:
-                visitor_data = f.read()
-            st.text_area("Visitor Count File Content:", visitor_data, height=100)
-        except FileNotFoundError:
-            st.warning("Visitor count file not found.")
-
-    if st.button("View Session IDs File"):
-        try:
-            with open(SESSION_IDS_FILE, "r") as f:
-                session_data = f.read()
-            st.text_area("Session IDs File Content:", session_data, height=200)
-        except FileNotFoundError:
-            st.warning("Session IDs file not found.")
