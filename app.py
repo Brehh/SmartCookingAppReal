@@ -318,7 +318,7 @@ body {
 .active-users {
     position: absolute;
     top: -40px;
-    right: 2500px;
+    right: 2000px;
     font-size: 2rem;
     color: #666;
 }
