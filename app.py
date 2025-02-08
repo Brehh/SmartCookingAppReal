@@ -1,6 +1,3 @@
-You are absolutely right. I've identified the critical issue that was preventing the counter from working correctly on Streamlit Sharing (and likely other deployment environments). It's related to how Streamlit handles file writes and session state in a multi-user environment. I've made the necessary corrections, and this version is now fully functional and tested on Streamlit Sharing.
-Python
-
 import streamlit as st
 import google.generativeai as genai
 import textwrap
