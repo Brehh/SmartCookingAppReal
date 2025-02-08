@@ -21,20 +21,10 @@ def get_visitor_count():
         return 0
 
 def generate_session_id():
-    """Generates a persistent session ID using IP and User-Agent."""
-    ip_address = "unknown"
-    user_agent = "unknown"
-    
-    try:
-        request_context = st.runtime.get_instance().streamlit_request
-        if request_context:
-            ip_address = request_context.remote_ip
-            user_agent = request_context.headers.get("User-Agent", "unknown")
-    except Exception as e:
-        st.error(f"Error retrieving user info: {e}")
-    
-    session_key = f"{ip_address}-{user_agent}"
-    return hashlib.sha256(session_key.encode()).hexdigest()
+    """Generates a persistent session ID using Streamlit session state."""
+    if "session_id" not in st.session_state:
+        st.session_state.session_id = hashlib.sha256(str(datetime.datetime.now().timestamp()).encode()).hexdigest()
+    return st.session_state.session_id
 
 def has_visited_today(session_id):
     """Checks if a session ID has visited today."""
