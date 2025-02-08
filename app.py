@@ -163,12 +163,12 @@ body {
 /* Visitor Count Styles - Positioned within the Title */
 .visitor-info {
     position: absolute;
-    top: -50px;
+    top: -25px;
     width: 100%;
     display: flex;
     justify-content: space-between; /* Space out the counts */
     padding: 0 20px; /* Add some padding */
-    font-size: 1.2rem;
+    font-size: 2rem;
     color: #666;
 
 }
