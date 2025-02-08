@@ -5,11 +5,13 @@ import hashlib
 import datetime
 import os
 import uuid
+import time
 
 # --- Visitor Counter (File-based persistence) ---
 COUNTER_FILE = "visitor_count.txt"
-SESSION_IDS_FILE = "session_ids.txt"
+ACTIVE_USERS_FILE = "active_users.txt"
 SESSION_STORAGE = "session_storage.txt"
+ACTIVE_TIMEOUT = 60  # Consider users active if they interacted within 60 seconds
 
 def get_visitor_count():
     """Gets the current visitor count from a file."""
@@ -22,73 +24,41 @@ def get_visitor_count():
             f.write("0")
         return 0
 
-def generate_session_id():
-    """Generates a persistent session ID using local storage and backup file."""
-    if "session_id" not in st.session_state or st.session_state.get("reset_session", False):
-        # Attempt to retrieve stored session ID from backup file
-        try:
-            with open(SESSION_STORAGE, "r") as f:
-                stored_id = f.read().strip()
-                if stored_id and not st.session_state.get("reset_session", False):
-                    st.session_state.session_id = stored_id
-                    return stored_id
-        except FileNotFoundError:
-            pass
-        
-        # Generate a new session ID only if none exists or session reset
-        st.session_state.session_id = str(uuid.uuid4())
-        with open(SESSION_STORAGE, "w") as f:
-            f.write(st.session_state.session_id)
-        st.session_state.reset_session = False  # Reset session flag
-    return st.session_state.session_id
+def increment_visitor_count():
+    """Increments the visitor count every time the page is accessed."""
+    count = get_visitor_count() + 1
+    with open(COUNTER_FILE, "w") as f:
+        f.write(str(count))
+    return count
 
-def has_visited_today(session_id):
-    """Checks if a session ID has visited today."""
-    today_str = datetime.date.today().strftime('%Y-%m-%d')
+def get_active_users():
+    """Counts the number of active users in the last ACTIVE_TIMEOUT seconds."""
+    current_time = time.time()
+    active_users = {}
     try:
-        with open(SESSION_IDS_FILE, "r") as f:
-            lines = f.readlines()
-        for line in lines:
-            line = line.strip()
-            if not line:
-                continue  # Skip empty lines
-            parts = line.split(",")
-            if len(parts) != 2:
-                continue  # Skip malformed lines
-            stored_session_id, stored_date = parts
-            if stored_session_id == session_id and stored_date == today_str:
-                return True
-        return False
-    except FileNotFoundError:
-        return False
-
-def record_visit(session_id):
-    """Records a visit by adding the session ID and date to the file only if it doesn't already exist."""
-    today_str = datetime.date.today().strftime('%Y-%m-%d')
-    existing_entries = set()
-    try:
-        with open(SESSION_IDS_FILE, "r") as f:
-            existing_entries = set(f.read().strip().split("\n"))
+        with open(ACTIVE_USERS_FILE, "r") as f:
+            for line in f:
+                user_id, last_seen = line.strip().split(",")
+                if current_time - float(last_seen) <= ACTIVE_TIMEOUT:
+                    active_users[user_id] = last_seen
     except FileNotFoundError:
         pass
     
-    new_entry = f"{session_id},{today_str}"
-    if new_entry not in existing_entries:
-        with open(SESSION_IDS_FILE, "a") as f:
-            f.write(new_entry + "\n")
-
-def increment_visitor_count():
-    """Increments the visitor count if a new, unique session is detected."""
-    session_id = generate_session_id()
+    # Update the file with only currently active users
+    with open(ACTIVE_USERS_FILE, "w") as f:
+        for user_id, last_seen in active_users.items():
+            f.write(f"{user_id},{last_seen}\n")
     
-    if not has_visited_today(session_id):
-        count = get_visitor_count() + 1
-        with open(COUNTER_FILE, "w") as f:
-            f.write(str(count))
-        record_visit(session_id)
-        return count, True  # New visit
-    else:
-        return get_visitor_count(), False  # Existing visit
+    return len(active_users)
+
+def update_active_user():
+    """Updates the current user's last seen time in the active users file."""
+    user_id = str(uuid.uuid4()) if "session_id" not in st.session_state else st.session_state.session_id
+    st.session_state.session_id = user_id
+    current_time = time.time()
+    
+    with open(ACTIVE_USERS_FILE, "a") as f:
+        f.write(f"{user_id},{current_time}\n")
 
 
 # --- API Key Setup (From Streamlit Secrets) ---
@@ -323,15 +293,16 @@ body {
 </style>
 """, unsafe_allow_html=True)
 
+# --- Increment Visitor Count and Update Active Users ---
+visitor_count = increment_visitor_count()
+update_active_user()
+active_users = get_active_users()
+
 # --- App UI ---
-
-# --- Increment Visitor Count and Display ---
-visitor_count, new_visit = increment_visitor_count()  # Get count *and* if it's a new visit
-if new_visit:
-  st.toast("🎉 New visitor!")
-st.markdown(f"<div class='visitor-count'>Visitors: {visitor_count}</div>", unsafe_allow_html=True)
-
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
+
+st.markdown(f"<div class='visitor-count'>Page Views: {visitor_count}</div>", unsafe_allow_html=True)
+st.markdown(f"<div class='active-users'>Active Users: {active_users}</div>", unsafe_allow_html=True)
 
 with st.container(border=True):
     # --- Mode Selection (Using Buttons) ---
@@ -496,22 +467,19 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
 
 # --- Admin Panel to Reset Visitor Count ---
 st.markdown("---")
-st.subheader("🔧 Admin Panel")
-admin_password = st.text_input("Enter Admin Password:", type="password")
+st.subheader("🔧 Admin Panel (ของคนแบกเท่านั้น)")
+admin_password = st.text_input("Enter Admin Password: เดาออกผมอึ้งเลย", type="password")
 if admin_password == st.secrets["ADMIN_PASSWORD"]:
     if st.button("Reset Visitor Count"):
         with open(COUNTER_FILE, "w") as f:
             f.write("0")
-        with open(SESSION_IDS_FILE, "w") as f:
+        with open(ACTIVE_USERS_FILE, "w") as f:
             f.truncate(0)
-        with open(SESSION_STORAGE, "w") as f:
-            f.truncate(0)
-        st.session_state.reset_session = True  # Reset session state
-        st.success("Visitor count and sessions reset to 0.")
+        st.success("Visitor count and active users reset to 0.")
         st.rerun()
     
     # --- View File Contents ---
-    st.subheader("📂 View Stored Data")
+    st.subheader("📂 View Stored Data (ถ้าเดารหัสออกอ่ะนะ 😎)")
     def read_file_content(file_path):
         try:
             with open(file_path, "r") as f:
@@ -523,11 +491,8 @@ if admin_password == st.secrets["ADMIN_PASSWORD"]:
     if st.button("View Visitor Count File"):
         st.text_area("Visitor Count File Content:", read_file_content(COUNTER_FILE), height=70)
     
-    if st.button("View Session IDs File"):
-        st.text_area("Session IDs File Content:", read_file_content(SESSION_IDS_FILE), height=200)
-    
-    if st.button("View Session Storage File"):
-        st.text_area("Session Storage File Content:", read_file_content(SESSION_STORAGE), height=100)
+    if st.button("View Active Users File"):
+        st.text_area("Active Users File Content:", read_file_content(ACTIVE_USERS_FILE), height=100)
 else:
     st.warning("Incorrect password or unauthorized access.")
 
