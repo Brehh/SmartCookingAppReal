@@ -24,21 +24,22 @@ def get_visitor_count():
 
 def generate_session_id():
     """Generates a persistent session ID using local storage and backup file."""
-    if "session_id" not in st.session_state:
+    if "session_id" not in st.session_state or st.session_state.get("reset_session", False):
         # Attempt to retrieve stored session ID from backup file
         try:
             with open(SESSION_STORAGE, "r") as f:
                 stored_id = f.read().strip()
-                if stored_id:
+                if stored_id and not st.session_state.get("reset_session", False):
                     st.session_state.session_id = stored_id
                     return stored_id
         except FileNotFoundError:
             pass
         
-        # Generate a new session ID only if none exists
+        # Generate a new session ID only if none exists or session reset
         st.session_state.session_id = str(uuid.uuid4())
         with open(SESSION_STORAGE, "w") as f:
             f.write(st.session_state.session_id)
+        st.session_state.reset_session = False  # Reset session flag
     return st.session_state.session_id
 
 def has_visited_today(session_id):
@@ -46,25 +47,35 @@ def has_visited_today(session_id):
     today_str = datetime.date.today().strftime('%Y-%m-%d')
     try:
         with open(SESSION_IDS_FILE, "r") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue  # Skip empty lines
-                parts = line.split(",")
-                if len(parts) != 2:
-                    continue  # Skip malformed lines
-                stored_session_id, stored_date = parts
-                if stored_session_id == session_id and stored_date == today_str:
-                    return True
+            lines = f.readlines()
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue  # Skip empty lines
+            parts = line.split(",")
+            if len(parts) != 2:
+                continue  # Skip malformed lines
+            stored_session_id, stored_date = parts
+            if stored_session_id == session_id and stored_date == today_str:
+                return True
         return False
     except FileNotFoundError:
         return False
 
 def record_visit(session_id):
-    """Records a visit by adding the session ID and date to the file."""
+    """Records a visit by adding the session ID and date to the file only if it doesn't already exist."""
     today_str = datetime.date.today().strftime('%Y-%m-%d')
-    with open(SESSION_IDS_FILE, "a") as f:
-        f.write(f"{session_id},{today_str}\n")
+    existing_entries = set()
+    try:
+        with open(SESSION_IDS_FILE, "r") as f:
+            existing_entries = set(f.read().strip().split("\n"))
+    except FileNotFoundError:
+        pass
+    
+    new_entry = f"{session_id},{today_str}"
+    if new_entry not in existing_entries:
+        with open(SESSION_IDS_FILE, "a") as f:
+            f.write(new_entry + "\n")
 
 def increment_visitor_count():
     """Increments the visitor count if a new, unique session is detected."""
