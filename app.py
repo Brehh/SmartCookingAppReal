@@ -248,7 +248,7 @@ body {
 /* Visitor Count Styles */
 .visitor-count {
     position: absolute;
-    top: 10px;
+    top: 50px;
     right: 20px;
     font-size: 1.2rem;
     color: #666;
@@ -261,7 +261,7 @@ body {
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
 
 visitor_count = increment_visitor_count()
-st.markdown(f"<div class='visitor-count'>Visitors: {visitor_count}</div>", unsafe_allow_html=True)
+st.markdown(f"<div class='visitor-count'>คนใช้งานเว็บไซต์จำนวน: {visitor_count} คน</div>", unsafe_allow_html=True)
 
 with st.container(border=True):
     # --- Mode Selection (Using Buttons) ---
