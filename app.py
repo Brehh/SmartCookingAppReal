@@ -235,17 +235,20 @@ with st.container(border=True):
     if 'mode' not in st.session_state:
         st.session_state.mode = "create"  # Default to 'create' mode
 
+    # *Directly* set the button label and next_mode based on the *current* state.
     if st.session_state.mode == "create":
-        button_label = "🔍 ค้นหาเมนู"  # Label for switching to search mode
+        button_label = "🔍 ค้นหาเมนู"
         next_mode = "search"
-        button_type = "secondary" # Make create mode button not primary
+        button_type = "secondary"
     else:
-        button_label = "📝 สร้างเมนู"  # Label for switching to create mode
+        button_label = "📝 สร้างเมนู"
         next_mode = "create"
         button_type = "secondary"
 
+    # The button *updates* the session state *before* the conditional display logic.
     if st.button(button_label, key="mode_toggle", type=button_type, use_container_width=True):
-        st.session_state.mode = next_mode  # Toggle the mode
+        st.session_state.mode = next_mode
+        st.rerun()  # Force immediate rerun
 
 
     # --- Conditional Display based on Selected Mode ---
