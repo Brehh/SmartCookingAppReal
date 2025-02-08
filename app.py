@@ -102,7 +102,7 @@ def call_gemini_api(prompt):
     for api_key in API_KEYS:
         try:
             genai.configure(api_key=api_key)
-            model = genai.GenerativeModel("gemini-2.0-flash-lite-preview-02-05")
+            model = genai.GenerativeModel("gemini-2.0-flash")
             response = model.generate_content(prompt)
             return response.text.strip()
         except Exception as e:
