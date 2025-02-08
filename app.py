@@ -506,6 +506,8 @@ if admin_password == st.secrets["ADMIN_PASSWORD"]:
             f.write("0")
         with open(ACTIVE_USERS_FILE, "w") as f:
             f.truncate(0)
+        with open(SESSION_STORAGE, "w") as f:
+            f.truncate(0)
         st.success("Visitor count and active users reset to 0.")
         st.rerun()
     
