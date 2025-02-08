@@ -17,38 +17,37 @@ def get_visitor_count():
     """Gets the current visitor count from session state."""
     return st.session_state.get("visitor_count", 0)
 
-
 def increment_visitor_count():
     """Increments visitor count if it's a new unique session for the day."""
-    ip_address = "unknown"
-    user_agent = "unknown"
 
-    try:
-        request_context = st.runtime.get_instance().streamlit_request
-        if request_context:
-            ip_address = request_context.remote_ip
-            user_agent = request_context.headers.get("User-Agent", "unknown")
-    except AttributeError:
-        pass  # It's okay if this fails in some environments
-    except Exception as e:
-        print(f"Error getting request context: {e}")
-        st.error(f"Error getting request context: {e}")
+    # 1. Get or create the session ID *from session state*.
+    if 'session_id' not in st.session_state:
+        # This is the *first* time in this session.  Generate a new ID.
+        ip_address = "unknown"
+        user_agent = "unknown"
+        try:
+            request_context = st.runtime.get_instance().streamlit_request
+            if request_context:
+                ip_address = request_context.remote_ip
+                user_agent = request_context.headers.get("User-Agent", "unknown")
+        except AttributeError:
+            pass  # It's okay if this fails in some environments
+        except Exception as e:
+            print(f"Error getting request context: {e}")
+            st.error(f"Error getting request context: {e}")
 
-    session_id = generate_session_id(ip_address, user_agent)
-
-    # Get or initialize the set of visited sessions.  CRUCIAL for persistence.
-    visited_sessions = st.session_state.get("visited_sessions", set())
-
-    if session_id not in visited_sessions:
-        # Increment and store the count in session state
-        st.session_state.visitor_count = st.session_state.get("visitor_count", 0) + 1
-        # Add the session ID to the set and *update session state*.
-        visited_sessions.add(session_id)
-        st.session_state.visited_sessions = visited_sessions  # MUST update session state!
-        return st.session_state.visitor_count, True  # New visit
+        st.session_state.session_id = generate_session_id(ip_address, user_agent)
+        new_visit = True
     else:
-        return st.session_state.visitor_count, False # Existing visit
+        # We already have a session ID for this user.
+        new_visit = False
 
+    # 2. Check if it's a *new* visit (first time in this session).
+    if new_visit:
+        st.session_state.visitor_count = st.session_state.get("visitor_count", 0) + 1
+        return st.session_state.visitor_count, True
+    else:
+        return st.session_state.visitor_count, False
 
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
