@@ -11,24 +11,22 @@ def generate_session_id():
     return hashlib.sha256(str(datetime.datetime.now().timestamp()).encode()).hexdigest()
 
 def get_visitor_count():
-    """Gets the current visitor count from session state."""
+    """Gets the current visitor count from session state or initializes it."""
     if "visitor_count" not in st.session_state:
         st.session_state.visitor_count = 0
     return st.session_state.visitor_count
 
 def increment_visitor_count():
-    """Increments visitor count if it's a new unique session."""
-    if "visited_sessions" not in st.session_state:
-        st.session_state.visited_sessions = set()
-        st.session_state.visitor_count = 0  # Ensure count persists correctly
-    
+    """Increments visitor count only if a new session is detected."""
     if "session_id" not in st.session_state:
-        st.session_state.session_id = generate_session_id()
-    
-    if st.session_state.session_id not in st.session_state.visited_sessions:
-        st.session_state.visitor_count += 1
-        st.session_state.visited_sessions.add(st.session_state.session_id)
-
+        st.session_state.session_id = hashlib.sha256(str(datetime.datetime.now().timestamp()).encode()).hexdigest()
+        if "visited_sessions" not in st.session_state:
+            st.session_state.visited_sessions = set()
+        
+        if st.session_state.session_id not in st.session_state.visited_sessions:
+            st.session_state.visitor_count += 1
+            st.session_state.visited_sessions.add(st.session_state.session_id)
+            
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
 
@@ -237,14 +235,17 @@ body {
 </style>
 """, unsafe_allow_html=True)
 
-# --- App UI ---
-
-# --- Increment Visitor Count and Display ---
+# --- Increment Visitor Count ---
 increment_visitor_count()
+
+# --- Store Visitor Count in Session State Globally ---
+if "global_visitor_count" not in st.session_state:
+    st.session_state.global_visitor_count = get_visitor_count()
+
+# --- App UI ---
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
 
-visitor_count = get_visitor_count()
-st.markdown(f"<div class='visitor-count'>Visitors: {visitor_count}</div>", unsafe_allow_html=True)
+st.markdown(f"<div class='visitor-count'>Visitors: {st.session_state.global_visitor_count}</div>", unsafe_allow_html=True)
 
 with st.container(border=True):
     # --- Mode Selection (Using Buttons) ---
