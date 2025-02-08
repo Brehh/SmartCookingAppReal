@@ -488,26 +488,6 @@ st.markdown("---")
 st.subheader("🔧 Admin Panel")
 admin_password = st.text_input("Enter Admin Password:", type="password")
 if admin_password == st.secrets["ADMIN_PASSWORD"]:
-    # --- Admin Panel to View Files ---
-    st.markdown("---")
-    st.subheader("📂 View Stored Data")
-    
-    if admin_password == st.secrets["ADMIN_PASSWORD"]:
-        if st.button("View Visitor Count File"):
-            try:
-                with open(COUNTER_FILE, "r") as f:
-                    visitor_data = f.read()
-                st.text_area("Visitor Count File Content:", visitor_data, height=100)
-            except FileNotFoundError:
-                st.warning("Visitor count file not found.")
-    
-        if st.button("View Session IDs File"):
-            try:
-                with open(SESSION_IDS_FILE, "r") as f:
-                    session_data = f.read()
-                st.text_area("Session IDs File Content:", session_data, height=200)
-            except FileNotFoundError:
-                st.warning("Session IDs file not found.")
     if st.button("Reset Visitor Count"):
         with open(COUNTER_FILE, "w") as f:
             f.write("0")
@@ -515,8 +495,39 @@ if admin_password == st.secrets["ADMIN_PASSWORD"]:
             f.truncate(0)
         with open(SESSION_STORAGE, "w") as f:
             f.truncate(0)
-        st.success("Visitor count reset to 0.")
+        st.session_state.reset_session = True  # Reset session state
+        st.success("Visitor count and sessions reset to 0.")
         st.rerun()
 else:
     st.warning("Incorrect password or unauthorized access.")
+
+# --- Admin Panel to View Files ---
+st.markdown("---")
+st.subheader("📂 View Stored Data")
+
+if admin_password == st.secrets["ADMIN_PASSWORD"]:
+    if st.button("View Visitor Count File"):
+        try:
+            with open(COUNTER_FILE, "r") as f:
+                visitor_data = f.read()
+            st.text_area("Visitor Count File Content:", visitor_data, height=50)
+        except FileNotFoundError:
+            st.warning("Visitor count file not found.")
+
+    if st.button("View Session IDs File"):
+        try:
+            with open(SESSION_IDS_FILE, "r") as f:
+                session_data = f.read()
+            st.text_area("Session IDs File Content:", session_data, height=200)
+        except FileNotFoundError:
+            st.warning("Session IDs file not found.")
+
+    if st.button("View Session Storage File"):
+        try:
+            with open(SESSION_STORAGE, "r") as f:
+                session_storage_data = f.read()
+            st.text_area("Session Storage File Content:", session_storage_data, height=100)
+        except FileNotFoundError:
+            st.warning("Session storage file not found.")
+
 
