@@ -465,8 +465,7 @@ with st.expander("Admin Panel (Click to Expand)", expanded=False):
         # Optional: Allow resetting the count
         if st.button("Reset Visitor Count"):
             st.session_state.visitor_count = 0  # Reset the count in session state
-            #Crucially, clear the visited_sessions set as well
-            st.session_state.visited_sessions = set()
+            st.session_state.visited_sessions = set()  # Clear visited sessions!
             st.success("Visitor count reset to 0.")
             st.rerun()
     elif admin_password != "":
