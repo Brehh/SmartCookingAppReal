@@ -248,7 +248,7 @@ body {
 /* Visitor Count Styles */
 .visitor-count {
     position: absolute;
-    top: 10px;
+    top: 0px;
     right: 20px;
     font-size: 1.2rem;
     color: #666;
