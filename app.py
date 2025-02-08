@@ -8,6 +8,7 @@ import os
 # --- Visitor Counter (File-based persistence) ---
 COUNTER_FILE = "visitor_count.txt"
 SESSION_IDS_FILE = "session_ids.txt"
+SESSION_STORAGE = "session_storage.txt"
 
 def get_visitor_count():
     """Gets the current visitor count from a file."""
@@ -21,9 +22,12 @@ def get_visitor_count():
         return 0
 
 def generate_session_id():
-    """Generates a persistent session ID using Streamlit session state."""
+    """Generates a persistent session ID using a more stable identifier."""
     if "session_id" not in st.session_state:
-        st.session_state.session_id = hashlib.sha256(str(datetime.datetime.now().timestamp()).encode()).hexdigest()
+        unique_identifier = str(st.experimental_user.hash if hasattr(st.experimental_user, 'hash') else datetime.datetime.now().timestamp())
+        st.session_state.session_id = hashlib.sha256(unique_identifier.encode()).hexdigest()
+        with open(SESSION_STORAGE, "a") as f:
+            f.write(f"{st.session_state.session_id}\n")
     return st.session_state.session_id
 
 def has_visited_today(session_id):
