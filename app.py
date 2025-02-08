@@ -152,7 +152,7 @@ body {
     color: #343a40;
     text-align: center;
     padding: 1rem 0;
-    font-size: 2rem; /* Adjust as needed */
+    font-size: 3rem; /* Adjust as needed */
     font-weight: 700;
     margin-bottom: 1rem;
     position: relative; /* For positioning visitor counts */
