@@ -309,7 +309,7 @@ body {
 /* Visitor Count Styles */
 .visitor-count {
     position: absolute;
-    top: -100px;
+    top: -50px;
     right: 20px;
     font-size: 2rem;
     color: #666;
