@@ -366,11 +366,11 @@ with st.container(border=True):
 
     # *Directly* set the button label and next_mode based on the *current* state.
     if st.session_state.mode == "create":
-        button_label = "🔍 ค้นหาเมนูที่อยากซื้อกิน 😎"
+        button_label = "🔍 ค้นหารายการอาหารโปรด 😎"
         next_mode = "search"
         button_type = "secondary"
     else:
-        button_label = "📝 สร้างเมนูทำกินเอง'"
+        button_label = "📝 สร้างเมนูอาหารทำเอง'"
         next_mode = "create"
         button_type = "secondary"
 
@@ -382,7 +382,7 @@ with st.container(border=True):
 
     # --- Conditional Display based on Selected Mode ---
     if st.session_state.mode == "create":
-        st.subheader("✨ สร้างเมนูทำกินเอง 🤩")
+        st.subheader("✨ สร้างเมนูอาหารทำเอง 🤩")
 
         with st.expander("📝 กรอกวัตถุดิบหลัก (คั่นด้วยจุลภาคด้วย)", expanded=True):
             ingredients = st.text_area("วัตถุดิบหลัก (คั่นด้วยจุลภาค):",
@@ -431,7 +431,7 @@ with st.container(border=True):
 
 
     elif st.session_state.mode == "search":
-        st.subheader("✨ ค้นหาเมนูที่คุณน่าจะอยากซื้อกิน 3 เมนู")
+        st.subheader("✨ ค้นหาเมนูที่คุณน่าจะชอบ 3 เมนู")
 
         with st.expander("⚙️ ตั้งค่าการค้นหา", expanded=True):
             col1, col2 = st.columns(2)
