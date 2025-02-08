@@ -4,7 +4,7 @@ import textwrap
 import hashlib
 import datetime
 
-# --- Visitor Counter (Session-based, using st.session_state and secrets for persistence) ---
+# --- Visitor Counter (Session-based, using st.session_state) ---
 
 def generate_session_id(ip_address, user_agent):
     """Generates a unique session ID based on IP, user agent, and date."""
@@ -13,9 +13,8 @@ def generate_session_id(ip_address, user_agent):
     return hashlib.sha256(data_to_hash.encode()).hexdigest()
 
 def get_visitor_count():
-    """Gets the current visitor count from Streamlit secrets."""
-    # Use a default value of 0 if the secret doesn't exist yet.
-    return st.secrets.get("visitor_count", 0)
+    """Gets the current visitor count from session state."""
+    return st.session_state.get("visitor_count", 0)
 
 def increment_visitor_count():
     """Increments visitor count if it's a new unique session for the day."""
@@ -33,26 +32,26 @@ def increment_visitor_count():
         print(f"Error getting request context: {e}")
         st.error(f"Error getting request context: {e}")
 
+    # 1. Get or create the session ID *from session state*.
+    if 'session_id' not in st.session_state:
+        # This is the *first* time in this session.  Generate a new ID.
+        st.session_state.session_id = generate_session_id(ip_address, user_agent)
+        new_visit = True
+    else:
+        # We already have a session ID for this user.
+        new_visit = False
 
-    session_id = generate_session_id(ip_address, user_agent)
-
-    # Get or initialize the set of visited sessions.  CRUCIAL for persistence.
+    # 2. Check against *all* previously visited sessions (stored in a set).
     visited_sessions = st.session_state.get("visited_sessions", set())
 
-    if session_id not in visited_sessions:
-        # This is a new session *for this user*.  Increment the global count.
-        # Get the current count from secrets
-        current_count = get_visitor_count()
-        # Increment and *update* the secret
-        st.secrets["visitor_count"] = current_count + 1
-        # Add session ID to the set, and *update* session state.
-        visited_sessions.add(session_id)
+    if st.session_state.session_id not in visited_sessions:
+        # Increment and store the count in session state
+        st.session_state.visitor_count = st.session_state.get("visitor_count", 0) + 1
+        visited_sessions.add(st.session_state.session_id)
         st.session_state.visited_sessions = visited_sessions  # MUST update session state!
-        return current_count + 1, True  # New visit
+        return st.session_state.visitor_count, True  # New visit
     else:
-        return get_visitor_count(), False  # Existing visit
-
-
+        return st.session_state.visitor_count, False  # Existing visit
 
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
