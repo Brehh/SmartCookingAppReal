@@ -17,7 +17,7 @@ st.set_page_config(
 # --- Visitor Counter (File-based persistence) ---
 COUNTER_FILE = "visitor_count.txt"
 ACTIVE_USERS_FILE = "active_users.txt"
-ACTIVE_TIMEOUT = 10  # Consider users active if they interacted within 10 seconds
+ACTIVE_TIMEOUT = 20  # Consider users active if they interacted within 10 seconds
 PING_INTERVAL = 5  # Ping every 5 seconds to keep users active
 
 
@@ -309,9 +309,9 @@ body {
 /* Visitor Count Styles */
 .visitor-count {
     position: absolute;
-    top: 10px;
+    top: 0px;
     right: 20px;
-    font-size: 1.2rem;
+    font-size: 2rem;
     color: #666;
 }
 
@@ -491,7 +491,7 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
 
 # --- Admin Panel to Reset Visitor Count ---
 st.markdown("---")
-st.subheader("🔧 Admin Panel")
+st.subheader("🔧 Admin Panel (เดาไปก็เท่านั้น)")
 admin_password = st.text_input("Enter Admin Password:", type="password")
 if admin_password == st.secrets["ADMIN_PASSWORD"]:
     if st.button("Reset Visitor Count and Active Users"):
