@@ -498,36 +498,27 @@ if admin_password == st.secrets["ADMIN_PASSWORD"]:
         st.session_state.reset_session = True  # Reset session state
         st.success("Visitor count and sessions reset to 0.")
         st.rerun()
+    
+    # --- View File Contents ---
+    st.subheader("📂 View Stored Data")
+    def read_file_content(file_path):
+        try:
+            with open(file_path, "r") as f:
+                content = f.read().strip()
+                return content if content else "(Empty File)"
+        except FileNotFoundError:
+            return "(File Not Found)"
+    
+    if st.button("View Visitor Count File"):
+        st.text_area("Visitor Count File Content:", read_file_content(COUNTER_FILE), height=50)
+    
+    if st.button("View Session IDs File"):
+        st.text_area("Session IDs File Content:", read_file_content(SESSION_IDS_FILE), height=200)
+    
+    if st.button("View Session Storage File"):
+        st.text_area("Session Storage File Content:", read_file_content(SESSION_STORAGE), height=100)
 else:
     st.warning("Incorrect password or unauthorized access.")
 
-# --- Admin Panel to View Files ---
-st.markdown("---")
-st.subheader("📂 View Stored Data")
-
-if admin_password == st.secrets["ADMIN_PASSWORD"]:
-    if st.button("View Visitor Count File"):
-        try:
-            with open(COUNTER_FILE, "r") as f:
-                visitor_data = f.read()
-            st.text_area("Visitor Count File Content:", visitor_data, height=50)
-        except FileNotFoundError:
-            st.warning("Visitor count file not found.")
-
-    if st.button("View Session IDs File"):
-        try:
-            with open(SESSION_IDS_FILE, "r") as f:
-                session_data = f.read()
-            st.text_area("Session IDs File Content:", session_data, height=200)
-        except FileNotFoundError:
-            st.warning("Session IDs file not found.")
-
-    if st.button("View Session Storage File"):
-        try:
-            with open(SESSION_STORAGE, "r") as f:
-                session_storage_data = f.read()
-            st.text_area("Session Storage File Content:", session_storage_data, height=100)
-        except FileNotFoundError:
-            st.warning("Session storage file not found.")
 
 
