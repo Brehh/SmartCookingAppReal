@@ -329,7 +329,7 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
 
         <li style='font-size: 1.6rem; font-weight: bold; margin-top: 10px;'>นาย ธีราธร มุกดาเพชรรัตน์</li>
         <li style='font-size: 1.3rem;'><em>ชั้น 6/13 เลขที่ 13</em></li>
-        <img src='https://media.istockphoto.com/id/176799603/photo/3-4-profile-portrait.jpg?s=612x612&w=0&k=20&c=ArfYQTh-m4PGKwNyWypZWl6Q918m71g6aj5y8s4k1bA=' width='250px' style='border-radius: 50%; margin-bottom: 20px;'>
+        <img src='https://imagekit.io/tools/asset-public-link?detail=%7B%22name%22%3A%22perth_tm2025_02_08_18_38_478aae62c6-a109-49ec-aef1-8152096b5149.jpg%22%2C%22type%22%3A%22image%2Fjpeg%22%2C%22signedurl_expire%22%3A%222028-02-08T11%3A41%3A12.572Z%22%2C%22signedUrl%22%3A%22https%3A%2F%2Fmedia-hosting.imagekit.io%2F%2F794cd2dd43b24aff%2Fperth_tm2025_02_08_18_38_478aae62c6-a109-49ec-aef1-8152096b5149.jpg%3FExpires%3D1833622873%26Key-Pair-Id%3DK2ZIVPTIP2VGHC%26Signature%3Du9sNP10b88y78jCRRUyLwn3OeHhsL7C0QbvaOcjCmOSGCD69RWN6e08aV19Se-7mknqcTF~zU9~snvhpFExvNR9jMhDubAePljCWIhBzzbpsRsOQ5akdEMa9AXVUOuXIzFN-igpqs-g9t8y~TqJ6mOO7daYkGa~L6Pnp3~G47pI3yWS5DVZ5hXcSHK7GQmupabIkfaaM-67FPYu7wF96vGlfatkSqA5zzIUGeX0yc~3kzI7dlCzqzqaXRKng6upQ07299g0LwFv3LBRO22VffO1fZr82TxnXUdEPcfmci-esT9LH6JEKwRET2fRLklG~qBRLc8wnzS0RdyrYjXRhEA__%22%7D' width='250px' style='border-radius: 50%; margin-bottom: 20px;'>
 
         <li style='font-size: 1.6rem; font-weight: bold; margin-top: 10px;'>นาย อภิวิชญ์ อดุลธรรมวิทย์</li>
         <li style='font-size: 1.3rem;'><em>ชั้น 6/13 เลขที่ 28</em></li>
