@@ -9,6 +9,10 @@ import datetime
 COUNTER_FILE = os.path.join(os.path.dirname(__file__), "visitor_count.txt")
 SESSION_IDS_FILE = os.path.join(os.path.dirname(__file__), "session_ids.txt")
 
+# --- Visitor Counter (File-based persistence) ---
+COUNTER_FILE = "visitor_count.txt"
+SESSION_IDS_FILE = "session_ids.txt"
+
 def get_visitor_count():
     """Gets the current visitor count from a file."""
     try:
@@ -21,60 +25,38 @@ def get_visitor_count():
             f.write("0")
         return 0
 
-def generate_session_id(ip_address, user_agent):
-    """Generates a unique session ID."""
-    now = datetime.datetime.now()
-    data_to_hash = f"{ip_address}-{user_agent}-{now.strftime('%Y-%m-%d')}"
-    return hashlib.sha256(data_to_hash.encode()).hexdigest()
+def generate_session_id():
+    """Generates a unique session ID based on the timestamp."""
+    return hashlib.sha256(str(datetime.datetime.now().timestamp()).encode()).hexdigest()
 
-def has_visited_today(session_id, today_str): # Added today_str argument
+def has_visited_today(session_id):
     """Checks if a session ID has visited today."""
+    today_str = datetime.date.today().strftime('%Y-%m-%d')
     try:
         with open(SESSION_IDS_FILE, "r") as f:
             for line in f:
-                if session_id == line.strip():
+                if session_id in line.strip():
                     return True
         return False
     except FileNotFoundError:
-         with open(SESSION_IDS_FILE, "w") as f: #create file if not exists
-            pass
-         return False
+        return False
 
 def record_visit(session_id):
     """Records a visit by adding the session ID to the file."""
+    today_str = datetime.date.today().strftime('%Y-%m-%d')
     with open(SESSION_IDS_FILE, "a") as f:
-        f.write(session_id + "\n")
+        f.write(f"{session_id},{today_str}\n")
 
 def increment_visitor_count():
     """Increments the visitor count if a new, unique session is detected."""
-    ip_address = "unknown"
-    user_agent = "unknown"
-
-    try:
-        request_context = st.runtime.get_instance().streamlit_request
-        if request_context:
-            ip_address = request_context.remote_ip
-            user_agent = request_context.headers.get("User-Agent", "unknown")
-    except AttributeError:
-        pass
-    except Exception as e:
-        print(f"Error getting request context: {e}")
-        st.error(f"Error getting request context: {e}")
-
-    session_id = generate_session_id(ip_address, user_agent)
-    today_str = datetime.date.today().strftime('%Y-%m-%d') # Get today's date
-
-    if not has_visited_today(session_id, today_str):  # Pass today_str
-        try: #try catch file operation
-          count = get_visitor_count()
-          count += 1
-          with open(COUNTER_FILE, "w") as f:
-              f.write(str(count))
-          record_visit(session_id)
-          return count, True  # New visit
-        except Exception as e:
-          print(f"Error increment file : {e}")
-          return get_visitor_count(), False
+    session_id = generate_session_id()
+    
+    if not has_visited_today(session_id):
+        count = get_visitor_count() + 1
+        with open(COUNTER_FILE, "w") as f:
+            f.write(str(count))
+        record_visit(session_id)
+        return count, True  # New visit
     else:
         return get_visitor_count(), False  # Existing visit
 
