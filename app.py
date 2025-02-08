@@ -510,7 +510,7 @@ if admin_password == st.secrets["ADMIN_PASSWORD"]:
             return "(File Not Found)"
     
     if st.button("View Visitor Count File"):
-        st.text_area("Visitor Count File Content:", read_file_content(COUNTER_FILE), height=50)
+        st.text_area("Visitor Count File Content:", read_file_content(COUNTER_FILE), height=70)
     
     if st.button("View Session IDs File"):
         st.text_area("Session IDs File Content:", read_file_content(SESSION_IDS_FILE), height=200)
