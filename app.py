@@ -1,13 +1,12 @@
 import streamlit as st
 import google.generativeai as genai
 import textwrap
-import hashlib
 import datetime
 import os
-import uuid
 import time
+import uuid
 
-# --- Page Configuration (Must be the first Streamlit command) ---
+# --- Page Configuration ---
 st.set_page_config(
     page_title="🍽️ Smart Cooking App 😎",
     page_icon="🍳",
@@ -18,9 +17,7 @@ st.set_page_config(
 # --- Visitor Counter (File-based persistence) ---
 COUNTER_FILE = "visitor_count.txt"
 ACTIVE_USERS_FILE = "active_users.txt"
-SESSION_STORAGE = "session_storage.txt"
-ACTIVE_TIMEOUT = 1  # Reduce active timeout to 10 seconds for rapid checking
-PING_INTERVAL = 3  # Ping every 3 seconds to detect active users
+ACTIVE_TIMEOUT = 10  # Consider users active if they interacted within 10 seconds
 
 
 def get_visitor_count():
@@ -53,10 +50,7 @@ def get_active_users():
                 line = line.strip()
                 if not line or "," not in line:
                     continue  # Skip empty or malformed lines
-                parts = line.split(",")
-                if len(parts) != 2:
-                    continue  # Ensure proper format
-                user_id, last_seen = parts
+                user_id, last_seen = line.split(",")
                 if current_time - float(last_seen) <= ACTIVE_TIMEOUT:
                     active_users[user_id] = last_seen
     except FileNotFoundError:
@@ -71,36 +65,11 @@ def get_active_users():
 
 
 def update_active_user():
-    """Updates the current user's last seen time in the active users file, keeping session ID consistent."""
-    if "session_id" not in st.session_state or st.session_state.get("force_new_session", False):
-        st.session_state.session_id = str(uuid.uuid4())
-        with open(SESSION_STORAGE, "w") as f:
-            f.write(st.session_state.session_id)
-        st.session_state.force_new_session = False
-    
-    user_id = st.session_state.session_id
+    """Adds a new active user every time the page is loaded."""
+    user_id = str(uuid.uuid4())
     current_time = time.time()
-    
-    active_users = {}
-    try:
-        with open(ACTIVE_USERS_FILE, "r") as f:
-            for line in f:
-                line = line.strip()
-                if not line or "," not in line:
-                    continue
-                parts = line.split(",")
-                if len(parts) != 2:
-                    continue
-                existing_user_id, last_seen = parts
-                active_users[existing_user_id] = last_seen
-    except FileNotFoundError:
-        pass
-    
-    # Update the current user's last seen time
-    active_users[user_id] = str(current_time)
-    with open(ACTIVE_USERS_FILE, "w") as f:
-        for uid, last_seen in active_users.items():
-            f.write(f"{uid},{last_seen}\n")
+    with open(ACTIVE_USERS_FILE, "a") as f:
+        f.write(f"{user_id},{current_time}\n")
 
 
 # --- API Key Setup (From Streamlit Secrets) ---
@@ -498,7 +467,6 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
         </div>
         """, unsafe_allow_html=True)
 
-
 # --- Admin Panel to Reset Visitor Count ---
 st.markdown("---")
 st.subheader("🔧 Admin Panel")
@@ -509,10 +477,6 @@ if admin_password == st.secrets["ADMIN_PASSWORD"]:
             f.write("0")
         with open(ACTIVE_USERS_FILE, "w") as f:
             f.truncate(0)
-        with open(SESSION_STORAGE, "w") as f:
-            f.truncate(0)
-        st.session_state.clear()
-        st.session_state.force_new_session = True
         st.success("Visitor count and active users reset to 0.")
         st.rerun()
     
