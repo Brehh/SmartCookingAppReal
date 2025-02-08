@@ -323,9 +323,6 @@ visitor_count = increment_visitor_count()
 update_active_user()
 active_users = get_active_users()
 
-# --- Auto-refresh to update active users ---
-st.rerun()
-
 # --- App UI ---
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
 
