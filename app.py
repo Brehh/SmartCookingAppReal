@@ -324,7 +324,7 @@ update_active_user()
 active_users = get_active_users()
 
 # --- Auto-refresh to update active users ---
-st.experimental_rerun(interval=PING_INTERVAL * 1000, key="refresh_active_users")
+st.experimental_memo.clear()
 
 # --- App UI ---
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
