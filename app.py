@@ -156,7 +156,7 @@ body {
     font-weight: 700;
     margin-bottom: 1rem;
     position: relative; /* For positioning visitor counts */
-    width: 100%;      /* Ensure it spans the full width */
+    width: 100%;     /* Ensure it spans the full width */
     left: 0;
 }
 
@@ -337,10 +337,10 @@ body {
 
      .mode-buttons{
         flex-direction: column; /* Stack buttons vertically */
-    }
+     }
      .menu-column {
-       padding: 15px;
-    }
+     padding: 15px;
+     }
 }
 
 
@@ -360,24 +360,22 @@ st.markdown(f"<div class='visitor-info'><span>Page Views: {visitor_count}</span>
 
 with st.container(border=True):
     # --- Mode Selection (Using Buttons) ---
-    # Use a single button to toggle between modes.  Initialize mode if not in session state.
+    # Initialize mode if not in session state.
     if 'mode' not in st.session_state:
         st.session_state.mode = "create"  # Default to 'create' mode
 
-    # *Directly* set the button label and next_mode based on the *current* state.
-    if st.session_state.mode == "create":
-        button_label = "🔍 ค้นหารายการอาหารโปรด 😎"
-        next_mode = "search"
-        button_type = "secondary"
-    else:
-        button_label = "📝 สร้างเมนูอาหารทำเอง"
-        next_mode = "create"
-        button_type = "secondary"
+    st.markdown("<h3 style='text-align: center;'>🔄 เลือกโหมดการทำงาน</h3>", unsafe_allow_html=True)
 
-    # The button *updates* the session state *before* the conditional display logic.
-    if st.button(button_label, key="mode_toggle", type=button_type, use_container_width=True):
-        st.session_state.mode = next_mode
-        st.rerun()  # Force immediate rerun
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("📝 สร้างเมนูอาหาร", key="create_mode", type="primary" if st.session_state.mode == "create" else "secondary", use_container_width=True):
+            st.session_state.mode = "create"
+
+
+    with col2:
+        if st.button("🔍 ค้นหารายการอาหาร", key="search_mode",  type="primary" if st.session_state.mode == "search" else "secondary", use_container_width=True):
+            st.session_state.mode = "search"
 
 
     # --- Conditional Display based on Selected Mode ---
@@ -474,7 +472,7 @@ with st.container(border=True):
                 taste = st.radio("รสชาติ", ["เผ็ด", "หวาน", "เค็ม", "เปรี้ยว", "ขม", "อูมามิ", "มัน", "ฝาด", "จืด", 'รสจัด',
                                                  'กลมกล่อม', 'กลางๆ'], horizontal=True)
                 budget = st.radio("งบประมาณ", ['ต่ำกว่า 100 บาท', '100 - 300 บาท', '300 - 1000 บาท', '1000 - 10000 บาท',
-                                                 'ไม่จำกัดงบ(ระดับ MrBeast)'], horizontal=True)
+                                                     'ไม่จำกัดงบ(ระดับ MrBeast)'], horizontal=True)
 
         if st.button("🔎 ค้นหาเมนู", use_container_width=True):
             if budget == 'ไม่จำกัดงบ(ระดับ MrBeast)':
