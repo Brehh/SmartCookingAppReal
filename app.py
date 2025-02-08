@@ -90,16 +90,9 @@ def update_active_user():
         for uid, last_seen in active_users.items():
             f.write(f"{uid},{last_seen}\n")
 
+
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
-
-# --- Page Configuration ---
-st.set_page_config(
-    page_title="🍽️ Smart Cooking App 😎",
-    page_icon="🍳",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
 
 # --- Helper Functions ---
 def call_gemini_api(prompt):
@@ -493,6 +486,7 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
         </div>
         """, unsafe_allow_html=True)
 
+
 # --- Admin Panel to Reset Visitor Count ---
 st.markdown("---")
 st.subheader("🔧 Admin Panel")
@@ -527,5 +521,6 @@ if admin_password == st.secrets["ADMIN_PASSWORD"]:
         st.text_area("Active Users File Content:", read_file_content(ACTIVE_USERS_FILE), height=100)
 else:
     st.warning("Incorrect password or unauthorized access.")
+
 
 
