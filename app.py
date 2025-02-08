@@ -7,24 +7,27 @@ import datetime
 # --- Visitor Counter (Session-based, using st.session_state) ---
 
 def generate_session_id():
-    """Generates a unique session ID based on the current date and session state."""
-    now = datetime.datetime.now()
-    return hashlib.sha256(now.strftime('%Y-%m-%d-%H-%M-%S').encode()).hexdigest()
-    
+    """Generates a unique session ID for the visitor."""
+    return hashlib.sha256(str(datetime.datetime.now().timestamp()).encode()).hexdigest()
+
 def get_visitor_count():
     """Gets the current visitor count from session state."""
-    return st.session_state.get("visitor_count", 0)
+    if "visitor_count" not in st.session_state:
+        st.session_state.visitor_count = 0
+    return st.session_state.visitor_count
 
 def increment_visitor_count():
-    """Increments visitor count if it's a new unique session for the day."""
+    """Increments visitor count if it's a new unique session."""
+    if "visited_sessions" not in st.session_state:
+        st.session_state.visited_sessions = set()
+        st.session_state.visitor_count = 0  # Ensure count persists correctly
+    
     if "session_id" not in st.session_state:
         st.session_state.session_id = generate_session_id()
-        if "visited_sessions" not in st.session_state:
-            st.session_state.visited_sessions = set()
-        if st.session_state.session_id not in st.session_state.visited_sessions:
-            st.session_state.visitor_count = st.session_state.get("visitor_count", 0) + 1
-            st.session_state.visited_sessions.add(st.session_state.session_id)
-    return st.session_state.visitor_count
+    
+    if st.session_state.session_id not in st.session_state.visited_sessions:
+        st.session_state.visitor_count += 1
+        st.session_state.visited_sessions.add(st.session_state.session_id)
 
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
@@ -237,10 +240,11 @@ body {
 # --- App UI ---
 
 # --- Increment Visitor Count and Display ---
-visitor_count = increment_visitor_count()
-st.markdown(f"<div class='visitor-count'>Visitors: {visitor_count}</div>", unsafe_allow_html=True)
-
+increment_visitor_count()
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
+
+visitor_count = get_visitor_count()
+st.markdown(f"<div class='visitor-count'>Visitors: {visitor_count}</div>", unsafe_allow_html=True)
 
 with st.container(border=True):
     # --- Mode Selection (Using Buttons) ---
