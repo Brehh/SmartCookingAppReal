@@ -2,19 +2,12 @@ import streamlit as st
 import google.generativeai as genai
 import textwrap
 import os
+import hashlib
+import datetime
 
-# --- API Key Setup (From Streamlit Secrets) ---
-API_KEYS = st.secrets["API_KEYS"]
+# --- Visitor Counter (Session-based, using a file) ---
 COUNTER_FILE = os.path.join(os.path.dirname(__file__), "visitor_count.txt")
-
-# --- Page Configuration ---
-st.set_page_config(
-    page_title="🍽️ Smart Cooking App 😎",
-    page_icon="🍳",  # Changed page icon to a frying pan
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
+SESSION_IDS_FILE = os.path.join(os.path.dirname(__file__), "session_ids.txt")
 
 def get_visitor_count():
     """Gets the current visitor count from a file."""
@@ -25,23 +18,77 @@ def get_visitor_count():
         count = 0
     return count
 
+def generate_session_id(ip_address, user_agent):
+    """Generates a (relatively) unique session ID based on IP and user agent."""
+    now = datetime.datetime.now()
+    data_to_hash = f"{ip_address}-{user_agent}-{now.strftime('%Y-%m-%d')}"  # Include the date
+    return hashlib.sha256(data_to_hash.encode()).hexdigest()
+
+def has_visited_today(session_id):
+    """Checks if a session ID has already been counted today."""
+    try:
+        with open(SESSION_IDS_FILE, "r") as f:
+            for line in f:
+                if session_id == line.strip():
+                    return True
+        return False
+    except FileNotFoundError:
+        return False
+
+def record_visit(session_id):
+    """Records a new visit (adds session ID to the file)."""
+    with open(SESSION_IDS_FILE, "a") as f:
+        f.write(session_id + "\n")
+
 def increment_visitor_count():
-    """Increments the visitor count and saves it to the file."""
-    count = get_visitor_count()
-    count += 1
-    with open(COUNTER_FILE, "w") as f:
-        f.write(str(count))
-    return count
+    """Increments visitor count if it's a new unique session for the day."""
+    # Get client IP address (works on Streamlit Cloud and locally)
+    try:
+        # This is the most reliable way to get the *client* IP on Streamlit Cloud
+        ip_address = st.experimental_get_query_params()["ip"][0]
+    except (KeyError, IndexError):
+        try:
+            # For local development, fall back to the remote address (less accurate)
+            ip_address = st.runtime.get_instance().streamlit_request.remote_ip
+        except:
+            ip_address = "unknown"  # Fallback if IP can't be determined
+    # Get user agent
+    try:
+        user_agent = st.runtime.get_instance().streamlit_request.headers.get("User-Agent")
+    except:
+        user_agent = "unknown"
+
+    session_id = generate_session_id(ip_address, user_agent)
+
+    if not has_visited_today(session_id):
+        count = get_visitor_count()
+        count += 1
+        with open(COUNTER_FILE, "w") as f:
+            f.write(str(count))
+        record_visit(session_id)  # Record the visit *after* updating the count
+        return count, True  # Return count and a flag indicating a new visit
+    else:
+        return get_visitor_count(), False  # Return count, and False (not a new visit)
 
 
 
+# --- API Key Setup (From Streamlit Secrets) ---
+API_KEYS = st.secrets["API_KEYS"]
+
+# --- Page Configuration ---
+st.set_page_config(
+    page_title="🍽️ Smart Cooking App 😎",
+    page_icon="🍳",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
 # --- Helper Functions ---
 def call_gemini_api(prompt):
     for api_key in API_KEYS:
         try:
             genai.configure(api_key=api_key)
-            model = genai.GenerativeModel("gemini-2.0-flash-001")
+            model = genai.GenerativeModel("gemini-2.0-flash-lite-preview-02-05")
             response = model.generate_content(prompt)
             return response.text.strip()
         except Exception as e:
@@ -258,10 +305,13 @@ body {
 """, unsafe_allow_html=True)
 
 # --- App UI ---
-st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
 
-visitor_count = increment_visitor_count()
-st.markdown(f"<div class='visitor-count'>คนใช้งานเว็บไซต์จำนวน: {visitor_count} คน</div>", unsafe_allow_html=True)
+# --- Increment Visitor Count and Display ---
+visitor_count, new_visit = increment_visitor_count()  # Get count *and* if it's a new visit
+if new_visit:
+  st.toast("🎉 New visitor!")
+st.markdown(f"<div class='visitor-count'>Visitors: {visitor_count}</div>", unsafe_allow_html=True)
+st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
 
 with st.container(border=True):
     # --- Mode Selection (Using Buttons) ---
@@ -422,3 +472,19 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
         </ul>
         </div>
         """, unsafe_allow_html=True)
+
+
+# --- Admin Section (Hidden) ---
+with st.expander("Admin Panel (Click to Expand)", expanded=False):
+    admin_password = st.text_input("Enter Admin Password:", type="password")
+    if admin_password == st.secrets["ADMIN_PASSWORD"]:  # Replace with your actual secret
+        st.write(f"Current Visitor Count: {get_visitor_count()}")
+
+        # Optional: Allow resetting the count (be *very* careful with this)
+        if st.button("Reset Visitor Count"):
+            with open(COUNTER_FILE, "w") as f:
+                f.write("0")
+            st.success("Visitor count reset to 0.")
+            st.rerun() # Rerun to update
+    elif admin_password != "": #check if input not empty
+        st.error("Incorrect password.")
