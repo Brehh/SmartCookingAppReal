@@ -516,7 +516,7 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
 
         <li style='font-size: 1.6rem; font-weight: bold; margin-top: 10px;'>นาย อภิวิชญ์ อดุลธรรมวิทย์ (ผู้ช่วย No.2)</li>
         <li style='font-size: 1.3rem;'><em>ชั้น 6/13 เลขที่ 28</em></li>
-        <img src='https://media.istockphoto.com/id/176799603/photo/3-4-profile-portrait.jpg?s=612x612&w=0&k=20&c=ArfYQTh-m4PGKwNyWypZWl6Q918m71g6aj5y8s4k1bA=' width='250px' style='border-radius: 50%; margin-bottom: 20px;'>
+        <img src='https://media-hosting.imagekit.io//e3962c8e8fa84567/513%2028.jpg?Expires=1833636651&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=IApvPc310iSHh~zIvIWoOHb-ABMcnPIPUmVAfVKHMQAz66kE1hCxbPUEWQNAIiekpZ1oDq9Nf8rmJ18AlAFtxzRAEOVGCXV1UWgz79A7kCvHHMbV1MnsOD2ZfY60ApLE-FRccfbKP3nLjaGZkcR3YA2ynywJVFHHau6MMA6mTUvy41nTWtRi9EDNP2Pbkxpr7hemhzcbtanbqtASvUHfWHspP5WXgJOXxq-TgoMYJudxvJbUsyp1Kg0WV1TOmo91xMgs5DC14xVXaE9lJ6NwfIG3zvoLehDiIXpYrGaI~nG~KUGXQJK~1st7lCdnkoLrCQhXJ55pGIOeIspbRj0LDQ__' width='250px' style='border-radius: 50%; margin-bottom: 20px;'>
 
         <li style='font-size: 1.6rem; font-weight: bold; margin-top: 10px;'>นาย ปัณณวิชญ์ หลีกภัย</li>
         <li style='font-size: 1.3rem;'><em>ชั้น 6/13 เลขที่ 29</em></li>
