@@ -13,9 +13,16 @@ def get_visitor_count():
     """Gets the current visitor count from a file."""
     try:
         with open(COUNTER_FILE, "r") as f:
-            return int(f.read())
+            content = f.read().strip()  # Read and remove any extra whitespace
+            if content:  # Check if the file is not empty
+                return int(content)
+            else:
+                return 0  # Return 0 if the file is empty
     except FileNotFoundError:
-        return 0  # Initialize if file doesn't exist
+        # If the file doesn't exist, create it and initialize the count.
+        with open(COUNTER_FILE, "w") as f:
+            f.write("0")
+        return 0
 
 def generate_session_id(ip_address, user_agent):
     """Generates a unique session ID."""
@@ -29,9 +36,12 @@ def has_visited_today(session_id):
         with open(SESSION_IDS_FILE, "r") as f:
             for line in f:
                 if session_id == line.strip():
-                    return True
-        return False
+                    return True  # ID found
+        return False  # ID not found
     except FileNotFoundError:
+        # File doesn't exist, so hasn't visited. Create the file.
+        with open(SESSION_IDS_FILE, "w") as f:
+            pass  # Just create the file, no need to write anything yet.
         return False
 
 def record_visit(session_id):
@@ -51,26 +61,27 @@ def increment_visitor_count():
             ip_address = request_context.remote_ip
             user_agent = request_context.headers.get("User-Agent", "unknown")
     except AttributeError:
-        pass
+        pass  # It's okay if this fails in some environments
     except Exception as e:
         print(f"Error getting request context: {e}")
         st.error(f"Error getting request context: {e}")
 
     session_id = generate_session_id(ip_address, user_agent)
+    #st.write(f"Session ID: {session_id}")  # Debugging output
 
     if not has_visited_today(session_id):
-        try: #use try except to handle error
+        try: #try catch for file operations
             count = get_visitor_count()
             count += 1
             with open(COUNTER_FILE, "w") as f:
                 f.write(str(count))
             record_visit(session_id)
-            return count, True  # New visit
+            return count, True #new visit
         except Exception as e:
             print(f"Error increment: {e}")
             return get_visitor_count(), False
     else:
-        return get_visitor_count(), False  # Existing visit
+        return get_visitor_count(), False #old visit
 
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
@@ -238,7 +249,7 @@ body {
     padding: 25px;
     margin-bottom: 15px;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.25s ease, box-shadow: 0.25s ease;
     border: 1px solid #dee2e6;
 }
 
@@ -307,11 +318,9 @@ body {
 # --- App UI ---
 
 # --- Increment Visitor Count and Display ---
-visitor_count, new_visit = increment_visitor_count()
+visitor_count, new_visit = increment_visitor_count()  # Get count *and* if it's a new visit
 if new_visit:
-    st.toast("🎉 New visitor!")
-else:
-    st.toast("🎉 Wellcome Back")
+  st.toast("🎉 New visitor!")
 st.markdown(f"<div class='visitor-count'>Visitors: {visitor_count}</div>", unsafe_allow_html=True)
 
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
