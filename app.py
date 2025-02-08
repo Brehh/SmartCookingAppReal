@@ -13,6 +13,7 @@ COUNTER_FILE = "visitor_count.txt"
 ACTIVE_USERS_FILE = "active_users.txt"
 SESSION_STORAGE = "session_storage.txt"
 ACTIVE_TIMEOUT = 10  # Reduce active timeout to 10 seconds for rapid checking
+PING_INTERVAL = 3  # Ping every 3 seconds to detect active users
 
 
 def get_visitor_count():
@@ -57,26 +58,32 @@ def get_active_users():
 
 
 def update_active_user():
-    """Updates the current user's last seen time in the active users file, removes duplicates."""
-    user_id = str(uuid.uuid4()) if "session_id" not in st.session_state else st.session_state.session_id
-    st.session_state.session_id = user_id
-    current_time = time.time()
+    """Updates the current user's last seen time in the active users file, continuously pinging to keep session active."""
+    if "session_id" not in st.session_state:
+        st.session_state.session_id = str(uuid.uuid4())
+    user_id = st.session_state.session_id
     
-    active_users = {}
-    try:
-        with open(ACTIVE_USERS_FILE, "r") as f:
-            for line in f:
-                existing_user_id, last_seen = line.strip().split(",")
-                if existing_user_id != user_id:
-                    active_users[existing_user_id] = last_seen
-    except FileNotFoundError:
-        pass
+    def ping_user():
+        while True:
+            time.sleep(PING_INTERVAL)
+            current_time = time.time()
+            active_users = {}
+            try:
+                with open(ACTIVE_USERS_FILE, "r") as f:
+                    for line in f:
+                        existing_user_id, last_seen = line.strip().split(",")
+                        active_users[existing_user_id] = last_seen
+            except FileNotFoundError:
+                pass
+            
+            # Update the current user's last seen time
+            active_users[user_id] = str(current_time)
+            with open(ACTIVE_USERS_FILE, "w") as f:
+                for uid, last_seen in active_users.items():
+                    f.write(f"{uid},{last_seen}\n")
     
-    # Update the file with new session
-    active_users[user_id] = str(current_time)
-    with open(ACTIVE_USERS_FILE, "w") as f:
-        for uid, last_seen in active_users.items():
-            f.write(f"{uid},{last_seen}\n")
+    # Start the pinging process in a separate thread
+    threading.Thread(target=ping_user, daemon=True).start()
 
 
 # --- API Key Setup (From Streamlit Secrets) ---
@@ -316,15 +323,6 @@ visitor_count = increment_visitor_count()
 update_active_user()
 active_users = get_active_users()
 
-# --- Auto-refresh active user count every 5 seconds ---
-def refresh_active_users():
-    while True:
-        time.sleep(5)
-        get_active_users()
-
-# Run the active user refresh in a separate thread
-threading.Thread(target=refresh_active_users, daemon=True).start()
-
 # --- App UI ---
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
 
@@ -494,8 +492,8 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
 
 # --- Admin Panel to Reset Visitor Count ---
 st.markdown("---")
-st.subheader("🔧 Admin Panel (ของคนแบกเท่านั้น)")
-admin_password = st.text_input("Enter Admin Password: เดาออกผมอึ้งเลย", type="password")
+st.subheader("🔧 Admin Panel")
+admin_password = st.text_input("Enter Admin Password:", type="password")
 if admin_password == st.secrets["ADMIN_PASSWORD"]:
     if st.button("Reset Visitor Count"):
         with open(COUNTER_FILE, "w") as f:
@@ -506,7 +504,7 @@ if admin_password == st.secrets["ADMIN_PASSWORD"]:
         st.rerun()
     
     # --- View File Contents ---
-    st.subheader("📂 View Stored Data (ถ้าเดารหัสออกอ่ะนะ 😎)")
+    st.subheader("📂 View Stored Data")
     def read_file_content(file_path):
         try:
             with open(file_path, "r") as f:
