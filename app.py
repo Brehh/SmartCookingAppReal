@@ -16,7 +16,6 @@ def get_visitor_count():
             content = f.read().strip()
             return int(content) if content else 0  # Handle empty file
     except FileNotFoundError:
-        # Create the file and initialize to 0 if it doesn't exist
         with open(COUNTER_FILE, "w") as f:
             f.write("0")
         return 0
@@ -31,14 +30,15 @@ def has_visited_today(session_id):
     try:
         with open(SESSION_IDS_FILE, "r") as f:
             for line in f:
-                if session_id in line.strip():
+                stored_session_id, stored_date = line.strip().split(",")
+                if session_id == stored_session_id and stored_date == today_str:
                     return True
         return False
     except FileNotFoundError:
         return False
 
 def record_visit(session_id):
-    """Records a visit by adding the session ID to the file."""
+    """Records a visit by adding the session ID and date to the file."""
     today_str = datetime.date.today().strftime('%Y-%m-%d')
     with open(SESSION_IDS_FILE, "a") as f:
         f.write(f"{session_id},{today_str}\n")
