@@ -495,6 +495,112 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
         </div>
         """, unsafe_allow_html=True)
 
+import streamlit as st
+import google.generativeai as genai
+import textwrap
+import hashlib
+import datetime
+import os
+import uuid
+import time
+
+# --- Visitor Counter (File-based persistence) ---
+COUNTER_FILE = "visitor_count.txt"
+ACTIVE_USERS_FILE = "active_users.txt"
+SESSION_STORAGE = "session_storage.txt"
+ACTIVE_TIMEOUT = 10  # Reduce active timeout to 10 seconds for rapid checking
+PING_INTERVAL = 3  # Ping every 3 seconds to detect active users
+
+
+def get_visitor_count():
+    """Gets the current visitor count from a file."""
+    try:
+        with open(COUNTER_FILE, "r") as f:
+            content = f.read().strip()
+            return int(content) if content else 0  # Handle empty file
+    except FileNotFoundError:
+        with open(COUNTER_FILE, "w") as f:
+            f.write("0")
+        return 0
+
+
+def increment_visitor_count():
+    """Increments the visitor count every time the page is accessed."""
+    count = get_visitor_count() + 1
+    with open(COUNTER_FILE, "w") as f:
+        f.write(str(count))
+    return count
+
+
+def get_active_users():
+    """Counts the number of active users in the last ACTIVE_TIMEOUT seconds and removes inactive ones."""
+    current_time = time.time()
+    active_users = {}
+    try:
+        with open(ACTIVE_USERS_FILE, "r") as f:
+            for line in f:
+                user_id, last_seen = line.strip().split(",")
+                if current_time - float(last_seen) <= ACTIVE_TIMEOUT:
+                    active_users[user_id] = last_seen
+    except FileNotFoundError:
+        pass
+    
+    # Update the file with only currently active users
+    with open(ACTIVE_USERS_FILE, "w") as f:
+        for user_id, last_seen in active_users.items():
+            f.write(f"{user_id},{last_seen}\n")
+    
+    return len(active_users)
+
+
+def update_active_user():
+    """Updates the current user's last seen time in the active users file, keeping session ID consistent."""
+    if "session_id" not in st.session_state or st.session_state.get("force_new_session", False):
+        st.session_state.session_id = str(uuid.uuid4())
+        with open(SESSION_STORAGE, "w") as f:
+            f.write(st.session_state.session_id)
+        st.session_state.force_new_session = False
+    
+    user_id = st.session_state.session_id
+    current_time = time.time()
+    
+    active_users = {}
+    try:
+        with open(ACTIVE_USERS_FILE, "r") as f:
+            for line in f:
+                existing_user_id, last_seen = line.strip().split(",")
+                active_users[existing_user_id] = last_seen
+    except FileNotFoundError:
+        pass
+    
+    # Update the current user's last seen time
+    active_users[user_id] = str(current_time)
+    with open(ACTIVE_USERS_FILE, "w") as f:
+        for uid, last_seen in active_users.items():
+            f.write(f"{uid},{last_seen}\n")
+
+
+# --- API Key Setup (From Streamlit Secrets) ---
+API_KEYS = st.secrets["API_KEYS"]
+
+# --- Page Configuration ---
+st.set_page_config(
+    page_title="🍽️ Smart Cooking App 😎",
+    page_icon="🍳",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+# --- Increment Visitor Count and Update Active Users ---
+visitor_count = increment_visitor_count()
+update_active_user()
+active_users = get_active_users()
+
+# --- App UI ---
+st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
+
+st.markdown(f"<div class='visitor-count'>Page Views: {visitor_count}</div>", unsafe_allow_html=True)
+st.markdown(f"<div class='active-users'>Active Users: {active_users}</div>", unsafe_allow_html=True)
 
 # --- Admin Panel to Reset Visitor Count ---
 st.markdown("---")
@@ -509,6 +615,7 @@ if admin_password == st.secrets["ADMIN_PASSWORD"]:
         with open(SESSION_STORAGE, "w") as f:
             f.truncate(0)
         st.session_state.clear()
+        st.session_state.force_new_session = True
         st.success("Visitor count and active users reset to 0.")
         st.rerun()
     
