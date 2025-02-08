@@ -20,9 +20,9 @@ def get_visitor_count():
             f.write("0")
         return 0
 
-def generate_session_id(ip_address, user_agent):
-    """Generates a unique session ID based on IP and User-Agent."""
-    return hashlib.sha256(f"{ip_address}-{user_agent}".encode()).hexdigest()
+def generate_session_id():
+    """Generates a unique session ID for each visitor."""
+    return hashlib.sha256(str(datetime.datetime.now().timestamp()).encode()).hexdigest()
 
 def has_visited_today(session_id):
     """Checks if a session ID has visited today."""
@@ -31,8 +31,8 @@ def has_visited_today(session_id):
         with open(SESSION_IDS_FILE, "r") as f:
             for line in f:
                 stored_session_id, stored_date = line.strip().split(",")
-                if session_id == stored_session_id and stored_date == today_str:
-                    return True
+                if stored_date == today_str:
+                    return stored_session_id == session_id
         return False
     except FileNotFoundError:
         return False
@@ -45,10 +45,7 @@ def record_visit(session_id):
 
 def increment_visitor_count():
     """Increments the visitor count if a new, unique session is detected."""
-    ip_address = st.experimental_user.hash if hasattr(st.experimental_user, 'hash') else "unknown"
-    user_agent = st.experimental_user.agent if hasattr(st.experimental_user, 'agent') else "unknown"
-    
-    session_id = generate_session_id(ip_address, user_agent)
+    session_id = generate_session_id()
     
     if not has_visited_today(session_id):
         count = get_visitor_count() + 1
@@ -58,7 +55,6 @@ def increment_visitor_count():
         return count, True  # New visit
     else:
         return get_visitor_count(), False  # Existing visit
-
 
 
 # --- API Key Setup (From Streamlit Secrets) ---
