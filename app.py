@@ -458,14 +458,13 @@ if st.button("📜 เกี่ยวกับผู้พัฒนา", use_con
 # --- Admin Section (Hidden) ---
 with st.expander("Admin Panel (Click to Expand)", expanded=False):
     admin_password = st.text_input("Enter Admin Password:", type="password")
-    if admin_password == st.secrets["ADMIN_PASSWORD"]:  # Replace with your actual secret
+    if admin_password == st.secrets["ADMIN_PASSWORD"]:
         st.write(f"Current Visitor Count: {get_visitor_count()}")
 
-        # Optional: Allow resetting the count (be *very* careful with this)
+        # Optional: Allow resetting the count
         if st.button("Reset Visitor Count"):
-            with open(COUNTER_FILE, "w") as f:
-                f.write("0")
+            st.session_state.visitor_count = 0  # Reset the count in session state
             st.success("Visitor count reset to 0.")
-            st.rerun() # Rerun to update
-    elif admin_password != "": #check if input not empty
+            st.rerun()
+    elif admin_password != "":
         st.error("Incorrect password.")
