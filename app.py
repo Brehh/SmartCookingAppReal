@@ -1,13 +1,9 @@
 import streamlit as st
 import google.generativeai as genai
 import textwrap
-import os
 import hashlib
 import datetime
-
-# --- Visitor Counter (File-based) ---
-COUNTER_FILE = os.path.join(os.path.dirname(__file__), "visitor_count.txt")
-SESSION_IDS_FILE = os.path.join(os.path.dirname(__file__), "session_ids.txt")
+import os
 
 # --- Visitor Counter (File-based persistence) ---
 COUNTER_FILE = "visitor_count.txt"
@@ -25,9 +21,9 @@ def get_visitor_count():
             f.write("0")
         return 0
 
-def generate_session_id():
-    """Generates a unique session ID based on the timestamp."""
-    return hashlib.sha256(str(datetime.datetime.now().timestamp()).encode()).hexdigest()
+def generate_session_id(ip_address, user_agent):
+    """Generates a unique session ID based on IP and User-Agent."""
+    return hashlib.sha256(f"{ip_address}-{user_agent}".encode()).hexdigest()
 
 def has_visited_today(session_id):
     """Checks if a session ID has visited today."""
@@ -49,7 +45,10 @@ def record_visit(session_id):
 
 def increment_visitor_count():
     """Increments the visitor count if a new, unique session is detected."""
-    session_id = generate_session_id()
+    ip_address = st.experimental_user.hash if hasattr(st.experimental_user, 'hash') else "unknown"
+    user_agent = st.experimental_user.agent if hasattr(st.experimental_user, 'agent') else "unknown"
+    
+    session_id = generate_session_id(ip_address, user_agent)
     
     if not has_visited_today(session_id):
         count = get_visitor_count() + 1
