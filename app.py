@@ -45,7 +45,7 @@ def increment_visitor_count():
     # Get client IP address (works on Streamlit Cloud and locally)
     try:
         # This is the most reliable way to get the *client* IP on Streamlit Cloud
-        ip_address = st.experimental_get_query_params()["ip"][0]
+        ip_address = st.query_params()["ip"][0]
     except (KeyError, IndexError):
         try:
             # For local development, fall back to the remote address (less accurate)
