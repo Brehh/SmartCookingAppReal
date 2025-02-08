@@ -326,7 +326,7 @@ body {
 /* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
     .title {
-        font-size: 2rem; /* Smaller title on mobile */
+        font-size: 1.5rem; /* Smaller title on mobile */
     }
     .visitor-info {
         font-size: 1rem;
