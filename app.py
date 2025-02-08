@@ -21,8 +21,10 @@ def get_visitor_count():
         return 0
 
 def generate_session_id():
-    """Generates a unique session ID for each visitor."""
-    return hashlib.sha256(str(datetime.datetime.now().timestamp()).encode()).hexdigest()
+    """Generates a persistent session ID for each visitor using Streamlit session state."""
+    if "session_id" not in st.session_state:
+        st.session_state.session_id = hashlib.sha256(str(datetime.datetime.now().timestamp()).encode()).hexdigest()
+    return st.session_state.session_id
 
 def has_visited_today(session_id):
     """Checks if a session ID has visited today."""
@@ -31,8 +33,8 @@ def has_visited_today(session_id):
         with open(SESSION_IDS_FILE, "r") as f:
             for line in f:
                 stored_session_id, stored_date = line.strip().split(",")
-                if stored_date == today_str:
-                    return stored_session_id == session_id
+                if stored_session_id == session_id and stored_date == today_str:
+                    return True
         return False
     except FileNotFoundError:
         return False
