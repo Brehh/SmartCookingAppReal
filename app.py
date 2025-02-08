@@ -237,9 +237,7 @@ body {
 # --- App UI ---
 
 # --- Increment Visitor Count and Display ---
-visitor_count, new_visit = increment_visitor_count()  # Get count *and* if it's a new visit
-if new_visit:
-  st.toast("🎉 New visitor!")
+visitor_count = increment_visitor_count()
 st.markdown(f"<div class='visitor-count'>Visitors: {visitor_count}</div>", unsafe_allow_html=True)
 
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
