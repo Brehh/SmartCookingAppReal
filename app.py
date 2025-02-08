@@ -315,6 +315,14 @@ body {
     color: #666;
 }
 
+.active-users {
+    position: absolute;
+    top: -50px;
+    right: -10px;
+    font-size: 2rem;
+    color: #666;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
