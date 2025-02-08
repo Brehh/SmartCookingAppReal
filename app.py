@@ -397,9 +397,12 @@ with st.container(border=True):
                     cols = st.columns(3)
                     for i, menu in enumerate(menu_list[:3]):
                         with cols[i]:
+                            # Convert Markdown **bold** to HTML <b> tags
+                            menu = menu.replace("**", "<b>").replace("**", "</b>")
                             st.markdown(
                                 f"<div class='menu-column'><h3>🍽️ เมนูที่ {i + 1}</h3><p class='menu-item'>{menu}</p></div>",
-                                unsafe_allow_html=True)
+                                unsafe_allow_html=True
+                            )
                 else:
                     st.warning("⚠️ ไม่พบเมนูที่ตรงกับเกณฑ์ของคุณ โปรดลองปรับการตั้งค่า")
             else:
