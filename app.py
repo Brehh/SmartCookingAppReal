@@ -476,3 +476,23 @@ if admin_password == st.secrets["ADMIN_PASSWORD"]:
         st.rerun()
 else:
     st.warning("Incorrect password or unauthorized access.")
+# --- Admin Panel to View Files ---
+st.markdown("---")
+st.subheader("📂 View Stored Data")
+
+if admin_password == st.secrets["ADMIN_PASSWORD"]:
+    if st.button("View Visitor Count File"):
+        try:
+            with open(COUNTER_FILE, "r") as f:
+                visitor_data = f.read()
+            st.text_area("Visitor Count File Content:", visitor_data, height=100)
+        except FileNotFoundError:
+            st.warning("Visitor count file not found.")
+
+    if st.button("View Session IDs File"):
+        try:
+            with open(SESSION_IDS_FILE, "r") as f:
+                session_data = f.read()
+            st.text_area("Session IDs File Content:", session_data, height=200)
+        except FileNotFoundError:
+            st.warning("Session IDs file not found.")
