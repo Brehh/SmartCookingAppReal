@@ -18,6 +18,7 @@ st.set_page_config(
 COUNTER_FILE = "visitor_count.txt"
 ACTIVE_USERS_FILE = "active_users.txt"
 ACTIVE_TIMEOUT = 10  # Consider users active if they interacted within 10 seconds
+PING_INTERVAL = 5  # Ping every 5 seconds to keep users active
 
 
 def get_visitor_count():
@@ -65,11 +66,32 @@ def get_active_users():
 
 
 def update_active_user():
-    """Adds a new active user every time the page is loaded."""
-    user_id = str(uuid.uuid4())
+    """Keeps updating the user's active status while the page is open."""
+    if "session_id" not in st.session_state:
+        st.session_state.session_id = str(uuid.uuid4())
+    user_id = st.session_state.session_id
     current_time = time.time()
-    with open(ACTIVE_USERS_FILE, "a") as f:
-        f.write(f"{user_id},{current_time}\n")
+    
+    active_users = {}
+    try:
+        with open(ACTIVE_USERS_FILE, "r") as f:
+            for line in f:
+                line = line.strip()
+                if not line or "," not in line:
+                    continue
+                parts = line.split(",")
+                if len(parts) != 2:
+                    continue
+                existing_user_id, last_seen = parts
+                active_users[existing_user_id] = last_seen
+    except FileNotFoundError:
+        pass
+    
+    # Update the current user's last seen time
+    active_users[user_id] = str(current_time)
+    with open(ACTIVE_USERS_FILE, "w") as f:
+        for uid, last_seen in active_users.items():
+            f.write(f"{uid},{last_seen}\n")
 
 
 # --- API Key Setup (From Streamlit Secrets) ---
@@ -300,6 +322,9 @@ body {
 visitor_count = increment_visitor_count()
 update_active_user()
 active_users = get_active_users()
+
+# --- Auto-refresh to update active users ---
+st_autorefresh(interval=PING_INTERVAL * 1000, key="refresh_active_users")
 
 # --- App UI ---
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
