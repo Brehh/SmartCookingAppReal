@@ -44,8 +44,8 @@ def increment_visitor_count():
     """Increments visitor count if it's a new unique session for the day."""
     # Get client IP address (works on Streamlit Cloud and locally)
     try:
-        # This is the most reliable way to get the *client* IP on Streamlit Cloud
-        ip_address = st.query_params.get("ip", ["unknown"])[0]
+        # Use st.query_params instead of st.experimental_get_query_params
+        ip_address = st.query_params.get("ip", ["unknown"])[0]  # Get IP, default to "unknown"
     except (KeyError, IndexError):
         try:
             # For local development, fall back to the remote address (less accurate)
@@ -295,9 +295,9 @@ body {
 /* Visitor Count Styles */
 .visitor-count {
     position: absolute;
-    top: -100px;
+    top: 10px;
     right: 20px;
-    font-size: 2rem;
+    font-size: 1.2rem;
     color: #666;
 }
 
@@ -311,6 +311,7 @@ visitor_count, new_visit = increment_visitor_count()  # Get count *and* if it's 
 if new_visit:
   st.toast("🎉 New visitor!")
 st.markdown(f"<div class='visitor-count'>Visitors: {visitor_count}</div>", unsafe_allow_html=True)
+
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
 
 with st.container(border=True):
