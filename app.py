@@ -32,10 +32,10 @@ def has_visited_today(session_id):
         with open(SESSION_IDS_FILE, "r") as f:
             for line in f:
                 if session_id == line.strip():
-                    return True
-        return False
+                    return True  # ID found, so they *have* visited today
+        return False  # ID not found
     except FileNotFoundError:
-        with open(SESSION_IDS_FILE, "w") as f: # Create file if not exists
+        with open(SESSION_IDS_FILE, 'w') as f: #create file if not exists
           pass
         return False
 
@@ -46,38 +46,34 @@ def record_visit(session_id):
 
 def increment_visitor_count():
     """Increments visitor count if it's a new unique session for the day."""
-    # Get client IP address (works on Streamlit Cloud and locally)
+    # Get client IP address and User-Agent (More robust)
+    ip_address = "unknown"  # Default value
+    user_agent = "unknown"
+
     try:
-        # Use st.query_params instead of st.experimental_get_query_params
-        # Crucial fix:  st.query_params returns a *list* of values, even if there's only one.
-        ip_address = st.query_params.get("ip", ["unknown"])[0]  # Get the *first* element
-    except (KeyError, IndexError):
-        try:
-            # For local development, fall back to the remote address (less accurate)
-            ip_address = st.runtime.get_instance().streamlit_request.remote_ip
-        except:
-            ip_address = "unknown"  # Fallback if IP can't be determined
-    # Get user agent
-    try:
-        user_agent = st.runtime.get_instance().streamlit_request.headers.get("User-Agent")
-        if user_agent is None: # Handle missing User-Agent
-          user_agent = "unknown"
-    except:
-        user_agent = "unknown"
+        # Try to get the request context (works on Streamlit Cloud AND locally)
+        request_context = st.runtime.get_instance().streamlit_request
+        if request_context:  # Check if request context exists
+            ip_address = request_context.remote_ip
+            user_agent = request_context.headers.get("User-Agent", "unknown")
+    except AttributeError:
+      pass #it okay if it fails
+    except Exception as e:
+        print(f"Error getting request context: {e}") # Log any unexpected errors
+        st.error(f"Error getting request context: {e}") # Show errors on web
 
     session_id = generate_session_id(ip_address, user_agent)
+    # st.write(f"Session ID: {session_id}")  # Debugging: Show session ID
 
     if not has_visited_today(session_id):
         count = get_visitor_count()
         count += 1
         with open(COUNTER_FILE, "w") as f:
             f.write(str(count))
-        record_visit(session_id)  # Record the visit *after* updating the count
-        return count, True  # Return count and a flag indicating a new visit
+        record_visit(session_id)
+        return count, True
     else:
-        return get_visitor_count(), False  # Return count, and False (not a new visit)
-
-
+        return get_visitor_count(), False
 
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
