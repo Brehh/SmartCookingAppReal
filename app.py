@@ -47,8 +47,10 @@ def increment_visitor_count():
     if st.session_state.session_id not in visited_sessions:
         # Increment and store the count in session state
         st.session_state.visitor_count = st.session_state.get("visitor_count", 0) + 1
-        visited_sessions.add(st.session_state.session_id)
-        st.session_state.visited_sessions = visited_sessions  # MUST update session state!
+        # *CRITICAL FIX:* Add to a *copy* of the set, then reassign.
+        visited_sessions_copy = visited_sessions.copy()  # Create a copy
+        visited_sessions_copy.add(st.session_state.session_id) # Modify the copy
+        st.session_state.visited_sessions = visited_sessions_copy # Reassign
         return st.session_state.visitor_count, True  # New visit
     else:
         return st.session_state.visitor_count, False  # Existing visit
@@ -219,7 +221,7 @@ body {
     padding: 25px;
     margin-bottom: 15px;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.25s ease, box-shadow: 0.25s ease;
     border: 1px solid #dee2e6;
 }
 
