@@ -364,7 +364,7 @@ if 'mode' not in st.session_state:
     st.session_state.mode = None  # No mode selected initially
 
 with st.container(border=True):
-    with st.expander("🔄 เลือกโหมดการทำงาน", expanded=st.session_state.mode is not None):
+    with st.expander("🔄 เลือกโหมดการทำงาน", expanded = False):
         col1, col2 = st.columns(2)
 
         with col1:
