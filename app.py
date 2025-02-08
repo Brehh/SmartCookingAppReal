@@ -4,33 +4,56 @@ import textwrap
 import hashlib
 import datetime
 
-# --- Visitor Counter (Session-based, using st.session_state) ---
+# --- Visitor Counter (Session-based, using st.session_state and secrets for persistence) ---
 
-def generate_session_id():
-    """Generates a unique session ID for the visitor."""
-    return hashlib.sha256(str(datetime.datetime.now().timestamp()).encode()).hexdigest()
+def generate_session_id(ip_address, user_agent):
+    """Generates a unique session ID based on IP, user agent, and date."""
+    now = datetime.datetime.now()
+    data_to_hash = f"{ip_address}-{user_agent}-{now.strftime('%Y-%m-%d')}"
+    return hashlib.sha256(data_to_hash.encode()).hexdigest()
 
 def get_visitor_count():
-    """Gets the current visitor count from session state or initializes it."""
-    if "visitor_count" not in st.session_state:
-        st.session_state.visitor_count = 0
-    return st.session_state.visitor_count
+    """Gets the current visitor count from Streamlit secrets."""
+    # Use a default value of 0 if the secret doesn't exist yet.
+    return st.secrets.get("visitor_count", 0)
 
 def increment_visitor_count():
-    """Increments visitor count only if a new session is detected."""
-    if "visitor_count" not in st.session_state:
-        st.session_state.visitor_count = 0  # Ensure it exists before incrementing
-    
-    if "visited_sessions" not in st.session_state:
-        st.session_state.visited_sessions = set()
-    
-    if "session_id" not in st.session_state:
-        st.session_state.session_id = hashlib.sha256(str(datetime.datetime.now().timestamp()).encode()).hexdigest()
-    
-    if st.session_state.session_id not in st.session_state.visited_sessions:
-        st.session_state.visitor_count += 1
-        st.session_state.visited_sessions.add(st.session_state.session_id)
-            
+    """Increments visitor count if it's a new unique session for the day."""
+    ip_address = "unknown"
+    user_agent = "unknown"
+
+    try:
+        request_context = st.runtime.get_instance().streamlit_request
+        if request_context:
+            ip_address = request_context.remote_ip
+            user_agent = request_context.headers.get("User-Agent", "unknown")
+    except AttributeError:
+        pass  # It's okay if this fails in some environments
+    except Exception as e:
+        print(f"Error getting request context: {e}")
+        st.error(f"Error getting request context: {e}")
+
+
+    session_id = generate_session_id(ip_address, user_agent)
+
+    # Get or initialize the set of visited sessions.  CRUCIAL for persistence.
+    visited_sessions = st.session_state.get("visited_sessions", set())
+
+    if session_id not in visited_sessions:
+        # This is a new session *for this user*.  Increment the global count.
+        # Get the current count from secrets
+        current_count = get_visitor_count()
+        # Increment and *update* the secret
+        st.secrets["visitor_count"] = current_count + 1
+        # Add session ID to the set, and *update* session state.
+        visited_sessions.add(session_id)
+        st.session_state.visited_sessions = visited_sessions  # MUST update session state!
+        return current_count + 1, True  # New visit
+    else:
+        return get_visitor_count(), False  # Existing visit
+
+
+
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
 
@@ -78,9 +101,11 @@ st.markdown("""
 body {
     font-family: 'Kanit', sans-serif;
 }
+
 .stApp {
     /* Default Streamlit background */
 }
+
 /* Main Container Styles */
 .main-container {
     border-radius: 15px;
@@ -89,6 +114,7 @@ body {
     margin-bottom: 20px;
     border: 2px solid #e0e0e0;
 }
+
 /* Header */
 .title {
     color: #343a40;
@@ -98,6 +124,7 @@ body {
     font-weight: 700;
     margin-bottom: 1rem;
 }
+
 /* Mode Selection Buttons - Using st.buttons */
 .mode-buttons {
     display: flex;
@@ -105,6 +132,7 @@ body {
     gap: 20px; /* Spacing between buttons */
     margin-bottom: 30px;
 }
+
 .mode-button {
     background-color: #007bff; /* Blue */
     color: white;
@@ -117,10 +145,12 @@ body {
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
+
 .mode-button:hover {
     background-color: #0056b3; /* Darker blue on hover */
     transform: translateY(-2px);
 }
+
 .mode-button-selected {
     background-color: #28a745; /* Green - for the selected mode */
     color: white;
@@ -143,19 +173,23 @@ body {
     font-weight: 700;
     margin-bottom: 0.5rem;
 }
+
 /* Input Sections */
 .input-section {
     margin-bottom: 1rem;
 }
+
 /* Input Fields */
 .stTextInput, .stSelectbox, .stSlider, .stRadio, .stNumberInput {
     margin-bottom: 0.8rem;
 }
+
 /* Text Area */
 .stTextArea>div>div>textarea{
     border-color:#3498db;
     border-radius: 8px;
 }
+
 /* Buttons */
 .stButton>button {
     background-color: #28a745;
@@ -168,15 +202,18 @@ body {
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
     width: 100%;
 }
+
 .stButton>button:hover {
     background-color: #218838;
     transform: translateY(-3px);
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
+
 .stButton>button:active {
     transform: translateY(0);
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
+
 /* Menu Columns */
 .menu-column {
     border-radius: 12px;
@@ -186,20 +223,24 @@ body {
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     border: 1px solid #dee2e6;
 }
+
 .menu-column:hover {
     transform: scale(1.02);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
+
 .menu-column h3 {
     color: #28a745;
     margin-bottom: 12px;
     font-size: 1.5rem;
     font-weight: 600;
 }
+
 .menu-item {
     font-size: 1.05rem;
     line-height: 1.7;
 }
+
 /* About Section */
 .about-section {
     border-radius: 12px;
@@ -212,22 +253,27 @@ body {
     list-style: none;
     padding: 0;
 }
+
 .about-section li {
     margin-bottom: 0.6rem;
 }
+
 /* Spinners */
 .st-cf {
     color: #28a745 !important;
 }
+
 /* Larger and Bolder Expander Text */
 .st-expander button[data-baseweb="button"] {
     font-size: 1.4rem !important; /* Larger font */
     font-weight: bold !important;   /* Bold text */
 }
+
 /* Change expander icons */
 .st-expander svg {
     color: #007bff; /* Blue expander icon */
 }
+
 /* Visitor Count Styles */
 .visitor-count {
     position: absolute;
@@ -236,19 +282,19 @@ body {
     font-size: 1.2rem;
     color: #666;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
-# --- Increment Visitor Count ---
-increment_visitor_count()
-
-# --- Store Visitor Count in Session State Globally ---
-st.session_state.global_visitor_count = get_visitor_count()
-
 # --- App UI ---
-st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
 
-st.markdown(f"<div class='visitor-count'>Visitors: {st.session_state.global_visitor_count}</div>", unsafe_allow_html=True)
+# --- Increment Visitor Count and Display ---
+visitor_count, new_visit = increment_visitor_count()  # Get count *and* if it's a new visit
+if new_visit:
+  st.toast("🎉 New visitor!")
+st.markdown(f"<div class='visitor-count'>Visitors: {visitor_count}</div>", unsafe_allow_html=True)
+
+st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
 
 with st.container(border=True):
     # --- Mode Selection (Using Buttons) ---
