@@ -1,10 +1,11 @@
 import streamlit as st
 import google.generativeai as genai
 import textwrap
+import os
 
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
-
+COUNTER_FILE = os.path.join(os.path.dirname(__file__), "visitor_count.txt")
 
 # --- Page Configuration ---
 st.set_page_config(
@@ -13,6 +14,27 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+
+def get_visitor_count():
+    """Gets the current visitor count from a file."""
+    try:
+        with open(COUNTER_FILE, "r") as f:
+            count = int(f.read())
+    except FileNotFoundError:
+        count = 0
+    return count
+
+def increment_visitor_count():
+    """Increments the visitor count and saves it to the file."""
+    count = get_visitor_count()
+    count += 1
+    with open(COUNTER_FILE, "w") as f:
+        f.write(str(count))
+    return count
+
+
+
 
 # --- Helper Functions ---
 def call_gemini_api(prompt):
@@ -223,11 +245,23 @@ body {
     color: #007bff; /* Blue expander icon */
 }
 
+/* Visitor Count Styles */
+.visitor-count {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 1.2rem;
+    color: #666;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
 # --- App UI ---
 st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
+
+visitor_count = increment_visitor_count()
+st.markdown(f"<div class='visitor-count'>Visitors: {visitor_count}</div>", unsafe_allow_html=True)
 
 with st.container(border=True):
     # --- Mode Selection (Using Buttons) ---
