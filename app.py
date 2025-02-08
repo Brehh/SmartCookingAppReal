@@ -370,7 +370,7 @@ with st.container(border=True):
         next_mode = "search"
         button_type = "secondary"
     else:
-        button_label = "📝 สร้างเมนูอาหารทำเอง'"
+        button_label = "📝 สร้างเมนูอาหารทำเอง"
         next_mode = "create"
         button_type = "secondary"
 
