@@ -7,14 +7,6 @@ import os
 import uuid
 import time
 
-# --- Page Configuration (Must be the first Streamlit command) ---
-st.set_page_config(
-    page_title="🍽️ Smart Cooking App 😎",
-    page_icon="🍳",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
 # --- Visitor Counter (File-based persistence) ---
 COUNTER_FILE = "visitor_count.txt"
 ACTIVE_USERS_FILE = "active_users.txt"
@@ -66,11 +58,20 @@ def get_active_users():
 
 def update_active_user():
     """Updates the current user's last seen time in the active users file, keeping session ID consistent."""
-    if "session_id" not in st.session_state or st.session_state.get("force_new_session", False):
-        st.session_state.session_id = str(uuid.uuid4())
-        with open(SESSION_STORAGE, "w") as f:
-            f.write(st.session_state.session_id)
-        st.session_state.force_new_session = False
+    if "session_id" not in st.session_state:
+        try:
+            with open(SESSION_STORAGE, "r") as f:
+                stored_id = f.read().strip()
+                if stored_id:
+                    st.session_state.session_id = stored_id
+        except FileNotFoundError:
+            pass
+        
+        # Generate a new session ID if none exists
+        if "session_id" not in st.session_state:
+            st.session_state.session_id = str(uuid.uuid4())
+            with open(SESSION_STORAGE, "w") as f:
+                f.write(st.session_state.session_id)
     
     user_id = st.session_state.session_id
     current_time = time.time()
@@ -93,6 +94,14 @@ def update_active_user():
 
 # --- API Key Setup (From Streamlit Secrets) ---
 API_KEYS = st.secrets["API_KEYS"]
+
+# --- Page Configuration ---
+st.set_page_config(
+    page_title="🍽️ Smart Cooking App 😎",
+    page_icon="🍳",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
 # --- Helper Functions ---
 def call_gemini_api(prompt):
