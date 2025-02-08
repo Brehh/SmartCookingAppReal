@@ -168,7 +168,7 @@ body {
     display: flex;
     justify-content: space-between; /* Space out the counts */
     padding: 0 20px; /* Add some padding */
-    font-size: 2rem;
+    font-size: 1.5rem;
     color: #666;
 
 }
