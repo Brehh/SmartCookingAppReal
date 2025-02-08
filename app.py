@@ -332,7 +332,7 @@ update_active_user()
 active_users = get_active_users()
 
 # --- App UI ---
-st.markdown("<h1 class='title'>🍽️ Smart Cooking App 😎</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='title'>🍽️ Smart Cooking App Demo 0.2 😎</h1>", unsafe_allow_html=True)
 
 st.markdown(f"<div class='visitor-count'>Page Views: {visitor_count}</div>", unsafe_allow_html=True)
 st.markdown(f"<div class='active-users'>Active Users: {active_users}</div>", unsafe_allow_html=True)
