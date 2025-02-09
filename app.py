@@ -489,7 +489,8 @@ def search_menu_mode():
             cols = st.columns(3)
             for i, menu in enumerate(menu_list[:3]):
                 with cols[i]:
-                    menu = menu.replace("**", "<b>").replace("**", "</b>")  # Convert **text** to <b>text</b>
+                    menu = menu.replace("**", "<b>").replace("**", "</b>")
+                    menu = menu.replace("*", "<b>").replace("*", "</b>")# Convert **text** to <b>text</b>
                     st.markdown(
                         f"<div class='menu-column'><h3>🍽️ เมนูที่ {i + 1}</h3><p class='menu-item'>{menu}</p></div>",
                         unsafe_allow_html=True
